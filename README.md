@@ -1,16 +1,3 @@
 # verbalyze
 
-A new Flutter project.
-
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Introducing our new Android app! Now you can easily turn your spoken words into short and organized summaries. No more typing or writing – just speak your thoughts, and our app will transform them into clear and concise notes. Whether you're in class, meetings, or simply want to remember ideas, our app makes it super simple. Make your note-taking effortless and efficient with our app – the smart way to summarize using your voice!
