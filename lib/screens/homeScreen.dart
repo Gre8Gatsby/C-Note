@@ -16,19 +16,18 @@ class _homeScreenState extends State<homeScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ElevatedButton(
-              child: Text('Take Live Note'),
+            CardButton(
+              title: 'Take Live Note',
               onPressed: () {
                 Navigator.pushNamed(context, '/liveNotes');
               },
-
             ),
-            ElevatedButton(
-              child: Text('Get call summary'),
+            SizedBox(height: 16),
+            CardButton(
+              title: 'Get Call Summary',
               onPressed: () {
                 Navigator.pushNamed(context, '/callSummary');
               },
-
             ),
           ],
         ),
@@ -37,3 +36,35 @@ class _homeScreenState extends State<homeScreen> {
   }
 }
 
+class CardButton extends StatelessWidget {
+  final String title;
+  final VoidCallback onPressed;
+
+  const CardButton({required this.title, required this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      color: Colors.blue, // Set the background color to blue
+      child: InkWell(
+        onTap: onPressed,
+        borderRadius: BorderRadius.circular(10),
+        child: Container(
+          padding: EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+          child: Text(
+            title,
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              color: Colors.white, // Set the text color to white
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

@@ -24,7 +24,7 @@ class _noteScreenState extends State<noteScreen> {
 
       String timestamp = DateFormat('yyyyMMdd_HHmmss').format(DateTime.now());
 
-      File file = File('${dir?.path}/verbalyze$timestamp.txt'); // Use the timestamp in the filename
+      File file = File('${dir?.path}/verbalyze$timestamp.txt');
       await file.writeAsString(text);
 
       showDialog(
