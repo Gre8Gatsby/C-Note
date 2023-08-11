@@ -10,12 +10,32 @@ class homeScreen extends StatefulWidget {
 class _homeScreenState extends State<homeScreen> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Home Page')),
-      body: Center(
+    double baseWidth = 360;
+    double fem = MediaQuery.of(context).size.width / baseWidth;
+    double ffem = fem * 0.97;
+    return Container(
+      width: double.infinity,
+      child: Container(
+        // login8tR (1:38)
+        padding: EdgeInsets.fromLTRB(30*fem, 0*fem, 0*fem, 0*fem),
+        width: double.infinity,
+        decoration: BoxDecoration (
+          color: Color(0xffffffff),
+        ),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            Container(
+              // vector11hK (1:59)
+              margin: EdgeInsets.fromLTRB(7*fem, 0*fem, 0*fem, 47*fem),
+              width: 391*fem,
+              height: 119*fem,
+              child: Image.asset(
+                'images/img1.png',
+                width: 391*fem,
+                height: 119*fem,
+              ),
+            ),
             CardButton(
               title: 'Take Live Note',
               onPressed: () {
@@ -29,6 +49,22 @@ class _homeScreenState extends State<homeScreen> {
                 Navigator.pushNamed(context, '/callSummary');
               },
             ),
+            SizedBox(height: 270),
+            Flexible(child:
+            Container(
+              margin: EdgeInsets.fromLTRB(51 * fem, 0, 0, 0),
+              width: 352.86 * fem,
+              height: 398.83 * fem,
+              child: Align(
+                child: Image.asset(
+                  'images/img2.png',
+                  width: 441.86 * fem,
+                  height: 398.83 * fem,
+                ),
+              ),
+            ),
+            ),
+
           ],
         ),
       ),
