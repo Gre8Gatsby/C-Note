@@ -12,14 +12,14 @@ class _homeScreenState extends State<homeScreen> {
   Widget build(BuildContext context) {
     double baseWidth = 360;
     double fem = MediaQuery.of(context).size.width / baseWidth;
-    double ffem = fem * 0.97;
+   // double ffem = fem * 0.97;
     return Container(
       width: double.infinity,
       child: Container(
         // login8tR (1:38)
-        padding: EdgeInsets.fromLTRB(30*fem, 0*fem, 0*fem, 0*fem),
+        padding: EdgeInsets.fromLTRB(10 * fem, 0 * fem, 0 * fem, 0 * fem),
         width: double.infinity,
-        decoration: BoxDecoration (
+        decoration: BoxDecoration(
           color: Color(0xffffffff),
         ),
         child: Column(
@@ -27,15 +27,16 @@ class _homeScreenState extends State<homeScreen> {
           children: [
             Container(
               // vector11hK (1:59)
-              margin: EdgeInsets.fromLTRB(7*fem, 0*fem, 0*fem, 47*fem),
-              width: 391*fem,
-              height: 119*fem,
+              margin: EdgeInsets.fromLTRB(7 * fem, 0  * fem, 0 * fem, 47 * fem),
+              width: 391 * fem,
+              height: 119 * fem,
               child: Image.asset(
                 'images/img1.png',
-                width: 391*fem,
-                height: 119*fem,
+                width: 391 * fem,
+                height: 119 * fem,
               ),
             ),
+            SizedBox(height: 20 * fem),
             CardButton(
               title: 'Take Live Note',
               onPressed: () {
@@ -49,22 +50,28 @@ class _homeScreenState extends State<homeScreen> {
                 Navigator.pushNamed(context, '/callSummary');
               },
             ),
-            SizedBox(height: 270),
-            Flexible(child:
-            Container(
-              margin: EdgeInsets.fromLTRB(51 * fem, 0, 0, 0),
-              width: 352.86 * fem,
-              height: 398.83 * fem,
-              child: Align(
-                child: Image.asset(
-                  'images/img2.png',
-                  width: 441.86 * fem,
-                  height: 398.83 * fem,
+            SizedBox(height: 16),
+            CardButton(
+              title: 'Get text files',
+              onPressed: () {
+                Navigator.pushNamed(context, '/summary');
+              },
+            ),
+            SizedBox(height: 170),
+            Flexible(
+              child: Container(
+                margin: EdgeInsets.fromLTRB(41 * fem, 0 *fem, 0 * fem, 0 * fem),
+                width: 352.86 * fem,
+                height: 398.83 * fem,
+                child: Align(
+                  child: Image.asset(
+                    'images/img2.png',
+                    width: 441.86 * fem,
+                    height: 398.83 * fem,
+                  ),
                 ),
               ),
             ),
-            ),
-
           ],
         ),
       ),
@@ -80,6 +87,8 @@ class CardButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double baseWidth = 360;
+    double fem = MediaQuery.of(context).size.width / baseWidth;
     return Card(
       elevation: 4,
       shape: RoundedRectangleBorder(
@@ -90,6 +99,16 @@ class CardButton extends StatelessWidget {
         onTap: onPressed,
         borderRadius: BorderRadius.circular(10),
         child: Container(
+          alignment: Alignment.center,
+          decoration: BoxDecoration (
+            borderRadius:  BorderRadius.circular(12*fem),
+            gradient:  LinearGradient (
+              begin:  Alignment(-1, -1),
+              end:  Alignment(1, 1),
+              colors:  <Color>[Color(0xff23a5d6), Color(0xff623aa2)],
+              stops:  <double>[0, 1],
+            ),
+          ),
           padding: EdgeInsets.symmetric(vertical: 16, horizontal: 24),
           child: Text(
             title,

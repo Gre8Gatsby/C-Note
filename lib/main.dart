@@ -3,6 +3,7 @@ import 'package:verbalyze/screens/homeScreen.dart';
 import 'package:verbalyze/screens/splashScreen.dart';
 import 'package:verbalyze/screens/fileScreen.dart';
 import 'package:verbalyze/screens/noteScreen.dart';
+import 'package:verbalyze/screens/summaryScreen.dart';
 
 
 void main(){
@@ -20,7 +21,8 @@ class MyApp extends StatelessWidget {
       routes: {
         '/home' : (context) => homeScreen(),
         '/callSummary'   : (context) => fileScreen(),
-        '/liveNotes' : (context)  => noteScreen()
+        '/liveNotes' : (context)  => noteScreen(),
+        '/summary': (context) => summaryScreen(),
       },
 
     );

@@ -53,6 +53,7 @@ class _noteScreenState extends State<noteScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,
@@ -89,15 +90,20 @@ class _noteScreenState extends State<noteScreen> {
             },
             backgroundColor: Colors.red,
             child: Icon(Icons.stop),
+
           ),
         ],
       ),
-      appBar: AppBar(
-        leading: Icon(Icons.sort_outlined, color: Colors.white),
-        centerTitle: true,
-        backgroundColor: Colors.blue,
-        title: Text('Verbalyze'),
-      ),
+      appBar: AppBar(title: Text('Take Notes'),
+
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient:  LinearGradient (
+              begin:  Alignment(-1, -1),
+              end:  Alignment(1, 1),
+              colors:  <Color>[Color(0xff23a5d6), Color(0xff623aa2)],
+              stops:  <double>[0, 1],
+            ),),),),
       body: SingleChildScrollView(
         reverse: true,
         physics: BouncingScrollPhysics(),
