@@ -38,6 +38,7 @@ dependencies:
   path_provider: ^2.0.15
   intl: ^0.18.1
   google_fonts: ^4.0.4
+  shared_preferences: ^2.1.1
 
 dev_dependencies:
   flutter_test:
@@ -69,6 +70,16 @@ flutter:
     - images/verbalyze.png
     - images/img1.png
     - images/img2.png
+    - images/auto-group-ngjb.png
+    - images/email.png
+    - images/g.png
+    - images/profile.png
+    - images/profile-ZS1.png
+    - images/vector-1-Nm7.png
+    - images/vector-2.png
+    - images/vector-2-hDk.png
+    - images/vector-SP3.png
+
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
