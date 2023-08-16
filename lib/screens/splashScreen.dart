@@ -68,8 +68,8 @@ class _SplashScreenState extends State<SplashScreen> {
               child: Center(
                 child: Image.asset(
                   "images/verbalyze.png",
-                  width: 120,
-                  height: 120,
+                  width: 190,
+                  height: 190,
                 ),
               ),
             ),
