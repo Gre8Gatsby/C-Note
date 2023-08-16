@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:verbalyze/screens/homeScreen.dart';
 import 'package:verbalyze/screens/register.dart';
 import 'package:verbalyze/screens/login.dart';
 

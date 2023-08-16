@@ -13,6 +13,8 @@ class _RegisterPageState extends State<RegisterPage> {
   TextEditingController emailController = TextEditingController();
   TextEditingController mobileController = TextEditingController();
 
+
+
   void _register() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString('name', nameController.text);
@@ -34,7 +36,7 @@ class _RegisterPageState extends State<RegisterPage> {
           children: [
             Container(
               // vector1gWV (1:66)
-              margin: EdgeInsets.fromLTRB(0 * fem, 0 * fem, 0 * fem, 13 * fem),
+              margin: EdgeInsets.fromLTRB(0 * fem, 0 * fem, 0 * fem, 12 * fem),
               width: 391 * fem,
               height: 119 * fem,
               child: Image.asset(
@@ -116,7 +118,29 @@ class _RegisterPageState extends State<RegisterPage> {
                   )),
             ),
             SizedBox(height: 20),
-            ElevatedButton(onPressed: _register, child: Text('Register')),
+             Container(
+              width: 150,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8.0),
+              ),
+              child: ElevatedButton(
+                onPressed: _register,
+                style: ElevatedButton.styleFrom(
+                  padding: EdgeInsets.all(16.0),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                ),
+                child: Text(
+                  'Register',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 17.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
             SizedBox(height: 10),
             TextButton(
               onPressed: () {
