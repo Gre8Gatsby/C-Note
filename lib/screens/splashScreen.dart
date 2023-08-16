@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:verbalyze/screens/homeScreen.dart';
 import 'package:verbalyze/screens/register.dart';
 import 'package:verbalyze/screens/login.dart';
 
@@ -8,32 +9,59 @@ class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
 
   @override
-  State<SplashScreen> createState() => _SplashScreenState();
+  State<SplashScreen> createState() => SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
+class SplashScreenState extends State<SplashScreen> {
+  static const String KEYLOGIN = "login";
   @override
   void initState() {
     super.initState();
-    Timer(Duration(seconds: 5), () => _navigateToAppropriatePage());
+    whereToGo();
   }
+  void whereToGo() async {
+    var sharedPref = await SharedPreferences.getInstance();
+    var isLoggedIn = sharedPref.getBool(KEYLOGIN);
+    Timer(Duration(seconds: 5), () {
 
-  void _navigateToAppropriatePage() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    bool isFirstTime = prefs.getBool('isFirstTime') ?? true;
+      if(isLoggedIn!=null){
+        if(isLoggedIn){
+          Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) => homeScreen()),
+          );
+        }
+        else{
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => LoginPage()),
+          );
+        }
+      }
+      else{
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => LoginPage()),
+        );
+      }
 
-    if (isFirstTime) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => RegisterPage()),
-      );
-    } else {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => LoginPage()),
-      );
-    }
+    });
   }
+  // void _navigateToAppropriatePage() async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   bool isFirstTime = prefs.getBool('isFirstTime') ?? true;
+  //
+  //   if (isFirstTime) {
+  //     Navigator.pushReplacement(
+  //       context,
+  //       MaterialPageRoute(builder: (context) => RegisterPage()),
+  //     );
+  //   } else {
+  //     Navigator.pushReplacement(
+  //       context,
+  //       MaterialPageRoute(builder: (context) => LoginPage()),
+  //     );
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -78,3 +106,5 @@ class _SplashScreenState extends State<SplashScreen> {
     );
   }
 }
+
+

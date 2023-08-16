@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:verbalyze/screens/splashScreen.dart';
 import '../utils.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -15,17 +17,18 @@ class _LoginPageState extends State<LoginPage> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String storedEmail = prefs.getString('email') ?? '';
     String storedPassword = prefs.getString('password') ?? '';
+    prefs.setBool(SplashScreenState.KEYLOGIN,true);
 
     if (emailController.text == storedEmail && passwordController.text == storedPassword) {
       Navigator.pushReplacementNamed(context, '/home'); // Navigate to home screen
     } else {
       // Show an error message or toast indicating failed authentication
       // For simplicity, we'll just print a message here.
-      // Fluttertoast.showToast(
-      //   msg: 'Invalid credentials',
-      //   toastLength: Toast.LENGTH_SHORT,
-      //   gravity: ToastGravity.CENTER,
-      // );
+      Fluttertoast.showToast(
+        msg: 'Invalid credentials',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+      );
       print('Authentication failed');
     }
   }
