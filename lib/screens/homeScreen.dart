@@ -17,7 +17,7 @@ class _homeScreenState extends State<homeScreen> {
       width: double.infinity,
       child: Container(
         // login8tR (1:38)
-        padding: EdgeInsets.fromLTRB(10 * fem, 0 * fem, 0 * fem, 0 * fem),
+        padding: EdgeInsets.fromLTRB(9 * fem, 0 * fem, 0 * fem, 0 * fem),
         width: double.infinity,
         decoration: BoxDecoration(
           color: Color(0xffffffff),
@@ -27,9 +27,9 @@ class _homeScreenState extends State<homeScreen> {
           children: [
             Container(
               // vector11hK (1:59)
-              margin: EdgeInsets.fromLTRB(7 * fem, 0  * fem, 0 * fem, 47 * fem),
-              width: 391 * fem,
-              height: 119 * fem,
+              margin: EdgeInsets.fromLTRB(7 * fem, 0 * fem, 0 * fem, 47 * fem),
+              width: 400 * fem,
+              height: 105 * fem,
               child: Image.asset(
                 'images/img1.png',
                 width: 391 * fem,
@@ -37,30 +37,46 @@ class _homeScreenState extends State<homeScreen> {
               ),
             ),
             SizedBox(height: 20 * fem),
-            CardButton(
-              title: 'Take Live Note',
-              onPressed: () {
-                Navigator.pushNamed(context, '/liveNotes');
-              },
-            ),
-            SizedBox(height: 16),
-            CardButton(
-              title: 'Get Call Summary',
-              onPressed: () {
-                Navigator.pushNamed(context, '/callSummary');
-              },
-            ),
-            SizedBox(height: 16),
-            CardButton(
-              title: 'Get text files',
-              onPressed: () {
-                Navigator.pushNamed(context, '/summary');
-              },
+            GridView.count(
+              crossAxisCount: 2, // Display two buttons per row
+              crossAxisSpacing: 16,
+              mainAxisSpacing: 16,
+              childAspectRatio: 2, // Adjust this value to control the button's aspect ratio
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+
+              children: [
+                CardButton(
+                  title: 'Take Live Note',
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/liveNotes');
+                  },
+                ),
+                CardButton(
+                  title: 'Recorded call',
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/callSummary');
+                  },
+                ),
+                CardButton(
+                  title: 'Get transcript',
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/summary');
+                  },
+                ),
+                CardButton(
+                  title: 'Get summary',
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/summary');
+                  },
+                ),
+                // Add more buttons here if needed
+              ],
             ),
             SizedBox(height: 170),
             Flexible(
               child: Container(
-                margin: EdgeInsets.fromLTRB(41 * fem, 0 *fem, 0 * fem, 0 * fem),
+                margin: EdgeInsets.fromLTRB(41 * fem, 0 * fem, 0 * fem, 0 * fem),
                 width: 352.86 * fem,
                 height: 398.83 * fem,
                 child: Align(
@@ -74,6 +90,7 @@ class _homeScreenState extends State<homeScreen> {
             ),
           ],
         ),
+
       ),
     );
   }

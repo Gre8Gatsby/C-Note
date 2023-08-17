@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:verbalyze/screens/homeScreen.dart';
+import 'package:verbalyze/screens/login.dart';
+import 'package:verbalyze/screens/register.dart';
 import 'package:verbalyze/screens/splashScreen.dart';
 import 'package:verbalyze/screens/fileScreen.dart';
 import 'package:verbalyze/screens/noteScreen.dart';
@@ -23,6 +25,8 @@ class MyApp extends StatelessWidget {
         '/callSummary'   : (context) => fileScreen(),
         '/liveNotes' : (context)  => noteScreen(),
         '/summary': (context) => summaryScreen(),
+        '/register': (context) => RegisterPage(),
+        '/login' : (context) => LoginPage(),
       },
 
     );
