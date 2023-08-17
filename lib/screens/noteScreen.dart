@@ -50,9 +50,11 @@ class _noteScreenState extends State<noteScreen> {
       ));
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+
 
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: Column(

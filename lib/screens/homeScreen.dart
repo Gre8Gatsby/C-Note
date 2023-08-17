@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
+
 
 class homeScreen extends StatefulWidget {
   const homeScreen({Key? key}) : super(key: key);
@@ -12,13 +15,41 @@ class _homeScreenState extends State<homeScreen> {
   Widget build(BuildContext context) {
     double baseWidth = 360;
     double fem = MediaQuery.of(context).size.width / baseWidth;
-   // double ffem = fem * 0.97;
-    return Container(
-      width: double.infinity,
+    // double ffem = fem * 0.97;
+    final drawer = Drawer(
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: [
+          DrawerHeader(
+            child: Text('Drawer'),
+            decoration: BoxDecoration(
+              color: Colors.blue,
+            ),
+          ),
+          ListTile(
+            title: Text('Item 1'),
+            onTap: () {},
+          ),
+          ListTile(
+            title: Text('Item 2'),
+            onTap: () {},
+          ),
+        ],
+      ),
+    );
+
+    return Scaffold(
+      drawer: drawer,
+
+
+
+    body:Container(
+
+      //width: double.infinity,
       child: Container(
         // login8tR (1:38)
         padding: EdgeInsets.fromLTRB(9 * fem, 0 * fem, 0 * fem, 0 * fem),
-        width: double.infinity,
+        //width: double.infinity,
         decoration: BoxDecoration(
           color: Color(0xffffffff),
         ),
@@ -70,6 +101,26 @@ class _homeScreenState extends State<homeScreen> {
                     Navigator.pushNamed(context, '/summary');
                   },
                 ),
+                CardButton(
+                  title: 'Share App',
+                  onPressed: () {
+                    //Navigator.pushNamed(context, '/summary');
+                    Share.share('Hi There, I am using the awesome app by Verbalyze where I can get text from voice spoken notes and generate summary of conferences , calls and classes.<our google form link to download the app>');
+                  },
+                ),
+                CardButton(
+                  title: 'Feedback',
+                  onPressed: () async {
+                    const feedbackUrl_ = 'https://www.verblayze.in';
+                    final Uri feedbackUrl=Uri.parse(feedbackUrl_);
+                    if (await canLaunchUrl(feedbackUrl)) {
+                      await launchUrl(feedbackUrl);
+                    } else {
+                      throw 'Could not launch $feedbackUrl';
+                    }
+                  },
+                ),
+
                 // Add more buttons here if needed
               ],
             ),
@@ -92,6 +143,7 @@ class _homeScreenState extends State<homeScreen> {
         ),
 
       ),
+    )
     );
   }
 }

@@ -7,6 +7,8 @@ import 'package:verbalyze/screens/fileScreen.dart';
 import 'package:verbalyze/screens/noteScreen.dart';
 import 'package:verbalyze/screens/summaryScreen.dart';
 
+import 'DrawerWidget.dart';
+
 
 void main(){
   runApp(MyApp());
@@ -28,6 +30,17 @@ class MyApp extends StatelessWidget {
         '/register': (context) => RegisterPage(),
         '/login' : (context) => LoginPage(),
       },
+      // builder: (context, child) {
+      //   return Scaffold(
+      //     appBar: AppBar(
+      //       //title: Text('Cnote'),
+      //     ),
+      //     drawer: DrawerWidget(), // Use the DrawerWidget here
+      //     body: child, // This will be the body of your app's screens
+      //   );
+      // },
+
+
 
     );
   }
