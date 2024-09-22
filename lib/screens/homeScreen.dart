@@ -4,7 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 
 class homeScreen extends StatefulWidget {
-  const homeScreen({Key? key}) : super(key: key);
+  const homeScreen({super.key});
 
   @override
   State<homeScreen> createState() => _homeScreenState();
@@ -20,18 +20,18 @@ class _homeScreenState extends State<homeScreen> {
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
-          DrawerHeader(
-            child: Text('Drawer'),
+          const DrawerHeader(
             decoration: BoxDecoration(
               color: Colors.blue,
             ),
+            child: Text('Drawer'),
           ),
           ListTile(
-            title: Text('Item 1'),
+            title: const Text('Item 1'),
             onTap: () {},
           ),
           ListTile(
-            title: Text('Item 2'),
+            title: const Text('Item 2'),
             onTap: () {},
           ),
         ],
@@ -50,7 +50,7 @@ class _homeScreenState extends State<homeScreen> {
         // login8tR (1:38)
         padding: EdgeInsets.fromLTRB(9 * fem, 0 * fem, 0 * fem, 0 * fem),
         //width: double.infinity,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           color: Color(0xffffffff),
         ),
         child: Column(
@@ -74,7 +74,7 @@ class _homeScreenState extends State<homeScreen> {
               mainAxisSpacing: 16,
               childAspectRatio: 2, // Adjust this value to control the button's aspect ratio
               shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
+              physics: const NeverScrollableScrollPhysics(),
 
               children: [
                 CardButton(
@@ -124,7 +124,7 @@ class _homeScreenState extends State<homeScreen> {
                 // Add more buttons here if needed
               ],
             ),
-            SizedBox(height: 170),
+            const SizedBox(height: 170),
             Flexible(
               child: Container(
                 margin: EdgeInsets.fromLTRB(41 * fem, 0 * fem, 0 * fem, 0 * fem),
@@ -152,7 +152,7 @@ class CardButton extends StatelessWidget {
   final String title;
   final VoidCallback onPressed;
 
-  const CardButton({required this.title, required this.onPressed});
+  const CardButton({super.key, required this.title, required this.onPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -171,17 +171,17 @@ class CardButton extends StatelessWidget {
           alignment: Alignment.center,
           decoration: BoxDecoration (
             borderRadius:  BorderRadius.circular(12*fem),
-            gradient:  LinearGradient (
+            gradient:  const LinearGradient (
               begin:  Alignment(-1, -1),
               end:  Alignment(1, 1),
               colors:  <Color>[Color(0xff23a5d6), Color(0xff623aa2)],
               stops:  <double>[0, 1],
             ),
           ),
-          padding: EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
           child: Text(
             title,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w600,
               color: Colors.white, // Set the text color to white

@@ -1,98 +1,100 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:verbalyze/screens/textFileScreen.dart';
+import 'package:c_note/utils.dart';
+import 'package:c_note/gpt_service.dart';
 
-class summaryScreen extends StatelessWidget {
-  Future<List<FileSystemEntity>> fetchTextFiles() async {
-    Directory directory = Directory('/storage/emulated/0/Android/data/com.example.untitled/files');
-    List<FileSystemEntity> fileList = directory.listSync().where((file) => file is File && file.path.endsWith('.txt')).toList();
-    return fileList;
+class SummaryScreen extends StatefulWidget {
+  const SummaryScreen({super.key});
+
+  @override
+  _SummaryScreenState createState() => _SummaryScreenState();
+}
+
+class _SummaryScreenState extends State<SummaryScreen> {
+  final TextEditingController _textController = TextEditingController();
+  String _summary = '';
+  bool _isLoading = false;
+
+  Future<void> _generateSummary() async {
+    if (_textController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter some text to summarize')),
+      );
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final summary = await GPTService.generateSummary(_textController.text);
+      setState(() {
+        _summary = summary;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to generate summary: $e')),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    double baseWidth = 360;
-    double fem = MediaQuery.of(context).size.width / baseWidth;
     return Scaffold(
-      appBar: AppBar(title: Text('Text File List'),
-
-    flexibleSpace: Container(
-    decoration: BoxDecoration(
-      gradient:  LinearGradient (
-        begin:  Alignment(-1, -1),
-        end:  Alignment(1, 1),
-        colors:  <Color>[Color(0xff23a5d6), Color(0xff623aa2)],
-        stops:  <double>[0, 1],
-      ),),),),
-      body: FutureBuilder<List<FileSystemEntity>>(
-        future: fetchTextFiles(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('No text files found.'));
-          } else {
-            return GridView.builder(
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3, // Number of columns in the grid
+      appBar: AppBar(
+        title: Text('Summary', style: Utils.getCustomFont(fontFamily: 'Roboto', fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment(-1, -1),
+              end: Alignment(1, 1),
+              colors: <Color>[Color(0xff23a5d6), Color(0xff623aa2)],
+              stops: <double>[0, 1],
+            ),
+          ),
+        ),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            TextField(
+              controller: _textController,
+              maxLines: 5,
+              decoration: const InputDecoration(
+                hintText: 'Enter text to summarize',
+                border: OutlineInputBorder(),
               ),
-              itemCount: snapshot.data!.length,
-              itemBuilder: (context, index) {
-                FileSystemEntity file = snapshot.data![index];
-                String fileName = file.uri.pathSegments.last; // Get the last segment of the file path
-                return GestureDetector(
-                  onTap: () {
-                    _openTextFile(context, file);
-                  },
-                  child: Card(
-                    margin: EdgeInsets.fromLTRB(8.6*fem, 8.6*fem, 8.6*fem, 13.66*fem), // Add margin
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12 * fem), // Add border radius
-                    ),
-                    child: Container(
-                      decoration: BoxDecoration (
-                    borderRadius:  BorderRadius.circular(12*fem),
-                    gradient:  LinearGradient (
-                      begin:  Alignment(-1, -1),
-                      end:  Alignment(1, 1),
-                      colors:  <Color>[Color(0xff23a5d6), Color(0xff623aa2)],
-                      stops:  <double>[0, 1],
-                    ),
-                  ),
-                      alignment: Alignment.center, // Center the content
-                      padding: EdgeInsets.symmetric(vertical: 20, horizontal: 34,),
-                      child: Text(
-                        fileName,
-                        style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white, // White text color
-                        ),
-                      ),
-                    ),
-                  ),
-
-                );
-              },
-            );
-          }
-        },
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: _isLoading ? null : _generateSummary,
+              child: _isLoading
+                  ? const CircularProgressIndicator(color: Colors.white)
+                  : const Text('Generate Summary'),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Summary:',
+              style: Utils.getCustomFont(fontFamily: 'Roboto', fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            Expanded(
+              child: SingleChildScrollView(
+                child: Text(
+                  _summary,
+                  style: Utils.getCustomFont(fontFamily: 'Roboto', fontSize: 16),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
-
-  void _openTextFile(BuildContext context, FileSystemEntity file) async {
-    if (await file.exists()) {
-      String content = await File(file.path).readAsString();
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => TextFileContentScreen(content),
-        ),
-      );
-    }
-  }
 }
-

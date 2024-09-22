@@ -1,133 +1,192 @@
 import 'package:flutter/material.dart';
-import 'package:speech_to_text/speech_to_text.dart';
-import 'dart:io';
-import 'package:path_provider/path_provider.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 
-class noteScreen extends StatefulWidget {
-  const noteScreen({Key? key}) : super(key: key);
+class NoteScreen extends StatefulWidget {
+  const NoteScreen({Key? key}) : super(key: key);
 
   @override
-  State<noteScreen> createState() => _noteScreenState();
+  _NoteScreenState createState() => _NoteScreenState();
 }
 
-class _noteScreenState extends State<noteScreen> {
-  SpeechToText speechToText= SpeechToText();
-  String text = "Hold the button to take note";
-  var isListening=false;
+class _NoteScreenState extends State<NoteScreen> {
+  List<CallNote> callNotes = [];
+  DateTime selectedDate = DateTime.now();
 
-  Future<void> _saveTextToFile() async{
-    try{
-      Directory? dir = await getExternalStorageDirectory();
-      print(dir?.path);
+  @override
+  void initState() {
+    super.initState();
+    _loadCallNotes();
+  }
 
+  Future<void> _loadCallNotes() async {
+    final prefs = await SharedPreferences.getInstance();
+    final allKeys = prefs.getKeys();
+    List<CallNote> notes = [];
 
-      String timestamp = DateFormat('yyyyMMdd_HHmmss').format(DateTime.now());
-
-      File file = File('${dir?.path}/verbalyze$timestamp.txt');
-      await file.writeAsString(text);
-
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text('File saved'),
-          actions: [
-            ElevatedButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text('OK'),
-            ),
-          ],
-        ),
-      );
-
+    for (String key in allKeys) {
+      if (key.contains('_')) {
+        final value = prefs.getString(key);
+        if (value != null) {
+          final Map<String, dynamic> noteMap = json.decode(value);
+          notes.add(CallNote(
+            contactName: key.split('_')[0],
+            phoneNumber: noteMap['phoneNumber'],
+            timestamp: DateTime.parse(noteMap['timestamp']),
+            summary: noteMap['summary'],
+          ));
+        }
+      }
     }
-    catch(e){
-      showDialog(context: context, builder: (context) => AlertDialog(
-        title: Text('Error'),
-        actions: [
-          ElevatedButton(onPressed: ()=> Navigator.pop(context), child: Text('OK'))
-        ],
-      ));
-    }
+
+    setState(() {
+      callNotes = notes..sort((a, b) => b.timestamp.compareTo(a.timestamp));
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
-
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          FloatingActionButton(
-            onPressed: () async {
-              if (!isListening) {
-                var available = await speechToText.initialize();
-                if (available) {
-                  setState(() {
-                    isListening = true;
-                    speechToText.listen(
-                      onResult: (result) {
-                        setState(() {
-                          text = result.recognizedWords;
-                        });
-                      },
-                    );
-                  });
-                }
-              }
-            },
-            backgroundColor: Colors.blue,
-            child: Icon(Icons.mic),
-          ),
-          SizedBox(height: 16),
-          FloatingActionButton(
-            onPressed: () {
-              setState(() {
-                isListening = false;
-              });
-              speechToText.stop();
-              _saveTextToFile();
-            },
-            backgroundColor: Colors.red,
-            child: Icon(Icons.stop),
-
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: Text('Call Notes', style: TextStyle(color: Colors.black)),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Image.asset(
+              'images/verbalyze.png',
+              width: 40,
+              height: 40,
+            ),
           ),
         ],
       ),
-      appBar: AppBar(title: Text('Take Notes'),
-
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient:  LinearGradient (
-              begin:  Alignment(-1, -1),
-              end:  Alignment(1, 1),
-              colors:  <Color>[Color(0xff23a5d6), Color(0xff623aa2)],
-              stops:  <double>[0, 1],
-            ),),),),
-      body: SingleChildScrollView(
-        reverse: true,
-        physics: BouncingScrollPhysics(),
-        child: Container(
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height * 0.7,
-          alignment: Alignment.center,
-          color: Colors.white70,
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          margin: const EdgeInsets.only(bottom: 150),
-          child: Text(
-            text,
-            style: TextStyle(
-              fontSize: 24,
-              color: isListening ? Colors.black87 : Colors.black54,
-              fontWeight: FontWeight.w600,
-            ),
+      body: Column(
+        children: [
+          _buildCalendar(),
+          Expanded(
+            child: _buildNotesList(),
           ),
-        ),
+        ],
       ),
     );
+  }
 
+  Widget _buildCalendar() {
+    return Container(
+      padding: EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            DateFormat('MMMM, d').format(selectedDate),
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black),
+          ),
+          SizedBox(height: 10),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: List.generate(7, (index) {
+                final date = DateTime.now().subtract(Duration(days: 3 - index));
+                return GestureDetector(
+                  onTap: () => setState(() => selectedDate = date),
+                  child: Container(
+                    width: 40,
+                    height: 60,
+                    margin: EdgeInsets.symmetric(horizontal: 5),
+                    decoration: BoxDecoration(
+                      color: date.day == selectedDate.day ? Colors.blue.shade100 : Colors.transparent,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(DateFormat('E').format(date)[0], style: TextStyle(fontSize: 12, color: Colors.black)),
+                        Text('${date.day}', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black)),
+                      ],
+                    ),
+                  ),
+                );
+              }),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildNotesList() {
+    final filteredNotes = callNotes.where((note) => 
+      note.timestamp.year == selectedDate.year &&
+      note.timestamp.month == selectedDate.month &&
+      note.timestamp.day == selectedDate.day
+    ).toList();
+
+    return ListView.builder(
+      itemCount: filteredNotes.length,
+      itemBuilder: (context, index) {
+        final note = filteredNotes[index];
+        return Container(
+          margin: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+          padding: EdgeInsets.all(15),
+          decoration: BoxDecoration(
+            color: Colors.blue.shade100,
+            borderRadius: BorderRadius.circular(15),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    note.contactName,
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
+                  ),
+                  Text(
+                    DateFormat('HH:mm').format(note.timestamp),
+                    style: TextStyle(fontSize: 14, color: Colors.grey),
+                  ),
+                ],
+              ),
+              SizedBox(height: 5),
+              Text(
+                note.phoneNumber,
+                style: TextStyle(fontSize: 14, color: Colors.grey),
+              ),
+              SizedBox(height: 10),
+              Text(
+                note.summary,
+                style: TextStyle(fontSize: 14, color: Colors.black),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+              SizedBox(height: 10),
+              Text(
+                'See More',
+                style: TextStyle(fontSize: 14, color: Colors.blue),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 }
 
+class CallNote {
+  final String contactName;
+  final String phoneNumber;
+  final DateTime timestamp;
+  final String summary;
+
+  CallNote({
+    required this.contactName,
+    required this.phoneNumber,
+    required this.timestamp,
+    required this.summary,
+  });
+}

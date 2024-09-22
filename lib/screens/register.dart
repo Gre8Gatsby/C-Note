@@ -1,167 +1,136 @@
 import 'package:flutter/material.dart';
+import 'package:c_note/utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:verbalyze/utils.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:c_note/screens/noteScreen.dart';
 
 class RegisterPage extends StatefulWidget {
+  const RegisterPage({super.key});
+
   @override
   _RegisterPageState createState() => _RegisterPageState();
 }
 
 class _RegisterPageState extends State<RegisterPage> {
   TextEditingController nameController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
   TextEditingController emailController = TextEditingController();
-  TextEditingController mobileController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+  TextEditingController confirmPasswordController = TextEditingController();
+  bool _isLoading = false;
 
+  Future<void> _register() async {
+    if (passwordController.text != confirmPasswordController.text) {
+      _showErrorToast('Passwords do not match');
+      return;
+    }
 
+    setState(() {
+      _isLoading = true;
+    });
 
-  void _register() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString('name', nameController.text);
-    prefs.setString('password', passwordController.text);
-    prefs.setString('email', emailController.text);
-    prefs.setString('mobile', mobileController.text);
-    Navigator.pushReplacementNamed(context, '/login'); // Navigate to login page
+    await prefs.setString('name', nameController.text);
+    await prefs.setString('email', emailController.text);
+    await prefs.setString('password', passwordController.text);
+    await prefs.setBool('isLoggedIn', true);
+
+    setState(() {
+      _isLoading = false;
+    });
+
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (context) => const NoteScreen()),
+    );
+  }
+
+  void _showErrorToast(String message) {
+    Fluttertoast.showToast(
+      msg: message,
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.BOTTOM,
+      backgroundColor: Colors.red,
+      textColor: Colors.white,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    double baseWidth = 360;
-    double fem = MediaQuery.of(context).size.width / baseWidth;
-    double ffem = fem * 0.97;
     return Scaffold(
+      appBar: AppBar(
+        title: Text('Register', style: Utils.getCustomFont(fontFamily: 'Roboto', fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment(-1, -1),
+              end: Alignment(1, 1),
+              colors: <Color>[Color(0xff23a5d6), Color(0xff623aa2)],
+              stops: <double>[0, 1],
+            ),
+          ),
+        ),
+      ),
       body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              // vector1gWV (1:66)
-              margin: EdgeInsets.fromLTRB(0 * fem, 0 * fem, 0 * fem, 12 * fem),
-              width: 391 * fem,
-              height: 119 * fem,
-              child: Image.asset(
-                'images/vector-1-Nm7.png',
-                width: 391 * fem,
-                height: 119 * fem,
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              TextField(
+                controller: nameController,
+                decoration: const InputDecoration(
+                  labelText: 'Name',
+                  border: OutlineInputBorder(),
+                ),
+                style: Utils.getCustomFont(fontFamily: 'Roboto', fontSize: 16),
               ),
-            ),
-            Text(
-              // createaccountaLy (1:77)
-              'Create account',
-              textAlign: TextAlign.center,
-              style: SafeGoogleFont(
-                'Lato',
-                fontSize: 30 * ffem,
-                fontWeight: FontWeight.w700,
-                height: 1.2 * ffem / fem,
-                color: Color(0xff262626),
+              const SizedBox(height: 20),
+              TextField(
+                controller: emailController,
+                decoration: const InputDecoration(
+                  labelText: 'Email',
+                  border: OutlineInputBorder(),
+                ),
+                style: Utils.getCustomFont(fontFamily: 'Roboto', fontSize: 16),
               ),
-            ),
-            SizedBox(height: 35),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20.0),
-              child: TextField(
-                  controller: nameController,
-                  decoration: InputDecoration(
-                    labelText: 'Name',
-                    hintText: 'Your Name',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(
-                          25.0),
-                    ),
-                    prefixIcon: Icon(Icons.person),
-                  )),
-            ),
-            SizedBox(height: 20),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20.0),
-              child: TextField(
-                  controller: passwordController,
-                  decoration: InputDecoration(
-                    labelText: 'Password',
-                    hintText: 'Your Password',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(
-                          25.0),
-                    ),
-                    prefixIcon: Icon(Icons.password),
-                  )),
-            ),
-            SizedBox(height: 20),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20.0),
-              child: TextField(
-                  controller: emailController,
-                  decoration: InputDecoration(
-                    labelText: 'Email',
-                    hintText: 'Your Email',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(
-                          25.0),
-                    ),
-                    prefixIcon: Icon(Icons.alternate_email),
-                  )),
-            ),
-            SizedBox(height: 20),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20.0),
-              child: TextField(
-                  controller: mobileController,
-                  decoration: InputDecoration(
-                    labelText: 'Mobile',
-                    hintText: 'Phone Number',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(
-                          25.0),
-                    ),
-                    prefixIcon: Icon(Icons.phone),
-                  )),
-            ),
-            SizedBox(height: 20),
-             Container(
-              width: 150,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8.0),
+              const SizedBox(height: 20),
+              TextField(
+                controller: passwordController,
+                obscureText: true,
+                decoration: const InputDecoration(
+                  labelText: 'Password',
+                  border: OutlineInputBorder(),
+                ),
+                style: Utils.getCustomFont(fontFamily: 'Roboto', fontSize: 16),
               ),
-              child: ElevatedButton(
-                onPressed: _register,
+              const SizedBox(height: 20),
+              TextField(
+                controller: confirmPasswordController,
+                obscureText: true,
+                decoration: const InputDecoration(
+                  labelText: 'Confirm Password',
+                  border: OutlineInputBorder(),
+                ),
+                style: Utils.getCustomFont(fontFamily: 'Roboto', fontSize: 16),
+              ),
+              const SizedBox(height: 30),
+              ElevatedButton(
+                onPressed: _isLoading ? null : _register,
                 style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.all(16.0),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
                 ),
-                child: Text(
-                  'Register',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 17.0,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                child: _isLoading
+                    ? CircularProgressIndicator(color: Colors.white)
+                    : Text('Register', style: Utils.getCustomFont(fontFamily: 'Roboto', fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
               ),
-            ),
-            SizedBox(height: 10),
-            TextButton(
-              onPressed: () {
-                Navigator.pushReplacementNamed(
-                    context, '/login'); // Navigate to login page
-              },
-              child: Text('Already have an account? Log in'),
-            ),
-
-                // SizedBox(
-                //   width: 352.86 * fem,
-                //   height: 398.83 * fem,
-                //   child: Image.asset(
-                //     'images/vector-2-hDk.png',
-                //     width: 641.86 * fem,
-                //     height: 798.83 * fem,
-                //   ),
-                // ),
-
-
-          ],
+              const SizedBox(height: 20),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text('Already have an account? Login', style: Utils.getCustomFont(fontFamily: 'Roboto', fontSize: 16, color: Colors.blue)),
+              ),
+            ],
+          ),
         ),
       ),
     );

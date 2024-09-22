@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:verbalyze/screens/splashScreen.dart';
-import '../utils.dart';
+import 'package:c_note/screens/noteScreen.dart';
+import 'package:c_note/utils.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
+
   @override
   _LoginPageState createState() => _LoginPageState();
 }
@@ -12,102 +14,110 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  bool _isLoading = false;
 
-  void _login() async {
+  Future<void> _login() async {
+    setState(() {
+      _isLoading = true;
+    });
+
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String storedEmail = prefs.getString('email') ?? '';
-    String storedPassword = prefs.getString('password') ?? '';
-    prefs.setBool(SplashScreenState.KEYLOGIN,true);
+    String? storedEmail = prefs.getString('email');
+    String? storedPassword = prefs.getString('password');
 
     if (emailController.text == storedEmail && passwordController.text == storedPassword) {
-      Navigator.pushReplacementNamed(context, '/home'); // Navigate to home screen
-    } else {
-      // Show an error message or toast indicating failed authentication
-      // For simplicity, we'll just print a message here.
-      Fluttertoast.showToast(
-        msg: 'Invalid credentials',
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
+      await prefs.setBool('isLoggedIn', true);
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const NoteScreen()),
       );
-      print('Authentication failed');
+    } else {
+      _showErrorToast('Invalid email or password');
     }
+
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
+  void _showErrorToast(String message) {
+    Fluttertoast.showToast(
+      msg: message,
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.BOTTOM,
+      backgroundColor: Colors.red,
+      textColor: Colors.white,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    double baseWidth = 360;
-    double fem = MediaQuery.of(context).size.width / baseWidth;
-    double ffem = fem * 0.97;
     return Scaffold(
       body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              // vector1gWV (1:66)
-              margin: EdgeInsets.fromLTRB(0 * fem, 0 * fem, 0 * fem, 13 * fem),
-              width: 391 * fem,
-              height: 119 * fem,
-              child: Image.asset(
-                'images/vector-1-Nm7.png',
-                width: 391 * fem,
-                height: 119 * fem,
+        child: SizedBox(
+          height: MediaQuery.of(context).size.height,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(20),
+                child: Image.asset('images/verbalyze.png', height: 100),
               ),
-            ),
-            SizedBox(height: 90),
-            Text(
-              // createaccountaLy (1:77)
-              'Login',
-              textAlign: TextAlign.center,
-              style: SafeGoogleFont(
-                'Lato',
-                fontSize: 30 * ffem,
-                fontWeight: FontWeight.w700,
-                height: 1.2 * ffem / fem,
-                color: Color(0xff262626),
+              const SizedBox(height: 20),
+              Text(
+                'Welcome Back!',
+                style: Utils.getCustomFont(
+                  fontFamily: 'Roboto',
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: const Color(0xFF333333),
+                ),
+                textAlign: TextAlign.center,
               ),
-            ),
-            SizedBox(height: 35),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20.0),
-              child: TextField(
+              const SizedBox(height: 20),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: TextField(
                   controller: emailController,
                   decoration: InputDecoration(
                     labelText: 'Email',
-                    hintText: 'Mail Address',
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(
-                          25.0),
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                    prefixIcon: Icon(Icons.alternate_email),
-                  )),
-            ),
-            SizedBox(height: 20),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20.0),
-              child: TextField(
+                    prefixIcon: const Icon(Icons.email),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: TextField(
                   controller: passwordController,
+                  obscureText: true,
                   decoration: InputDecoration(
                     labelText: 'Password',
-                    hintText: 'Your Password',
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(
-                          25.0),
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                    prefixIcon: Icon(Icons.password),
-                  )),
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(onPressed: _login, child: Text('Login')),
-            SizedBox(height: 10),
-            TextButton(
-              onPressed: () {
-                Navigator.pushReplacementNamed(context, '/register'); // Navigate to register page
-              },
-              child: Text("Don't have an account? Register"),
-            ),
-            
-          ],
+                    prefixIcon: const Icon(Icons.lock),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: _isLoading ? null : _login,
+                child: _isLoading
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : const Text('Login'),
+              ),
+              const SizedBox(height: 20),
+              TextButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, '/register');
+                },
+                child: const Text('Don\'t have an account? Register'),
+              ),
+            ],
+          ),
         ),
       ),
     );

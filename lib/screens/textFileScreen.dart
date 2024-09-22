@@ -3,15 +3,15 @@ import 'package:flutter/material.dart';
 class TextFileContentScreen extends StatelessWidget {
   final String content;
 
-  TextFileContentScreen(this.content);
+  const TextFileContentScreen(this.content, {super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Text File List'),
+      appBar: AppBar(title: const Text('Text File List'),
 
         flexibleSpace: Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             gradient:  LinearGradient (
               begin:  Alignment(-1, -1),
               end:  Alignment(1, 1),
