@@ -138,34 +138,34 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_background_service
-      sha256: "7b9f15ab7d1a5784850ecfde722be4ace4dbcf1072a1fe33b7f9cbe871241e53"
+      sha256: a4cdfcedfab743ae65327142f29bd694ecea6d7f9fd59e5967c07d11b25dedf5
       url: "https://pub.dev"
     source: hosted
-    version: "2.4.6"
+    version: "3.0.2"
   flutter_background_service_android:
     dependency: "direct main"
     description:
       name: flutter_background_service_android
-      sha256: "57fd631d800f7e56ca5bfadcfc00c8903eb721b23506b1a387342039521883ec"
+      sha256: d8c5abc8076d1c3e8ebdb197d6c1a701a79c247e0deaffc084e5a92e47ade0ab
       url: "https://pub.dev"
     source: hosted
-    version: "3.0.3"
+    version: "4.0.2"
   flutter_background_service_ios:
     dependency: transitive
     description:
       name: flutter_background_service_ios
-      sha256: d3f1dc009137c1ac19f5e3d88668836f088a7e078396733547339765d46ff12f
+      sha256: "980a8eba58ad1d8c52ab3b3dc9cebd129caa2ee0ef3d37e7efb2dcb2466a65bb"
       url: "https://pub.dev"
     source: hosted
-    version: "2.4.0"
+    version: "3.0.0"
   flutter_background_service_platform_interface:
     dependency: transitive
     description:
       name: flutter_background_service_platform_interface
-      sha256: "5f0480ee8378984f718d640abbe09b4d6d024d58a72b2d8b86bdedb3cf095ff8"
+      sha256: "15f9cbe2f018d79a991c2468ca448f059a5a1762bf50c9cca66cefd414dcb6c1"
       url: "https://pub.dev"
     source: hosted
-    version: "2.2.0"
+    version: "3.0.0"
   flutter_lints:
     dependency: "direct dev"
     description:
@@ -174,6 +174,30 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.3"
+  flutter_sound:
+    dependency: "direct main"
+    description:
+      name: flutter_sound
+      sha256: "1f40b26b92907a433afe877c927cd48f5a2e4d0f7188e5d39eb5756008aa51ab"
+      url: "https://pub.dev"
+    source: hosted
+    version: "9.6.0"
+  flutter_sound_platform_interface:
+    dependency: transitive
+    description:
+      name: flutter_sound_platform_interface
+      sha256: "2e218521d8187b9a4c65063ad9c79bfe88119531ff68047a2eaa6b027cb276bb"
+      url: "https://pub.dev"
+    source: hosted
+    version: "9.6.0"
+  flutter_sound_web:
+    dependency: transitive
+    description:
+      name: flutter_sound_web
+      sha256: "5013a15e4e69a4bdc8badd729130eef43c3305e30ba8e6933f863436ce969932"
+      url: "https://pub.dev"
+    source: hosted
+    version: "9.6.0"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -196,18 +220,18 @@ packages:
     dependency: "direct main"
     description:
       name: google_fonts
-      sha256: "2776c66b3e97c6cdd58d1bd3281548b074b64f1fd5c8f82391f7456e38849567"
+      sha256: e20ff62b158b96f392bfc8afe29dee1503c94fbea2cbe8186fd59b756b8ae982
       url: "https://pub.dev"
     source: hosted
-    version: "4.0.5"
+    version: "5.1.0"
   google_speech:
     dependency: "direct main"
     description:
       name: google_speech
-      sha256: "28e61723493489a35aca4309181b891563854fb3e459e3eb3108751f2fbe4518"
+      sha256: "8951d58806df1a2836cebbb48cdddb91d0118a7a8b2fa4a95412ad4fbc2c1aff"
       url: "https://pub.dev"
     source: hosted
-    version: "2.2.0"
+    version: "4.4.0"
   googleapis_auth:
     dependency: transitive
     description:
@@ -296,6 +320,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.1"
+  logger:
+    dependency: transitive
+    description:
+      name: logger
+      sha256: "697d067c60c20999686a0add96cf6aba723b3aa1f83ecf806a8097231529ec32"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.4.0"
   matcher:
     dependency: transitive
     description:
@@ -328,6 +360,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.6"
+  nested:
+    dependency: transitive
+    description:
+      name: nested
+      sha256: "03bac4c528c64c95c722ec99280375a6f2fc708eec17c7b3f07253b626cd2a20"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
   path:
     dependency: transitive
     description:
@@ -444,10 +484,18 @@ packages:
     dependency: transitive
     description:
       name: protobuf
-      sha256: "01dd9bd0fa02548bf2ceee13545d4a0ec6046459d847b6b061d8a27237108a08"
+      sha256: "68645b24e0716782e58948f8467fd42a880f255096a821f9e7d0ec625b00c84d"
       url: "https://pub.dev"
     source: hosted
-    version: "2.1.0"
+    version: "3.1.0"
+  provider:
+    dependency: transitive
+    description:
+      name: provider
+      sha256: c8a055ee5ce3fd98d6fc872478b03823ffdb448699c6ebdbbc71d59b596fd48c
+      url: "https://pub.dev"
+    source: hosted
+    version: "6.1.2"
   quiver:
     dependency: transitive
     description:
@@ -456,6 +504,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.2.2"
+  recase:
+    dependency: transitive
+    description:
+      name: recase
+      sha256: e4eb4ec2dcdee52dcf99cb4ceabaffc631d7424ee55e56f280bc039737f89213
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.1.0"
   rxdart:
     dependency: "direct main"
     description:
@@ -468,10 +524,10 @@ packages:
     dependency: "direct main"
     description:
       name: share_plus
-      sha256: b1f15232d41e9701ab2f04181f21610c36c83a12ae426b79b4bd011c567934b1
+      sha256: "3ef39599b00059db0990ca2e30fca0a29d8b37aae924d60063f8e0184cf20900"
       url: "https://pub.dev"
     source: hosted
-    version: "6.3.4"
+    version: "7.2.2"
   share_plus_platform_interface:
     dependency: transitive
     description:
@@ -541,14 +597,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.99"
-  sound_stream:
-    dependency: "direct main"
-    description:
-      name: sound_stream
-      sha256: "031bba4a342df5d2b9dedf44abe4290fdf1a68a4ccf6601e984ef86631672028"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.3.0"
   source_span:
     dependency: transitive
     description:
@@ -589,6 +637,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.0"
+  synchronized:
+    dependency: transitive
+    description:
+      name: synchronized
+      sha256: "51b08572b9f091f8c3eb4d9d4be253f196ff0075d5ec9b10a884026d5b55d7bc"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.3.0+2"
   term_glyph:
     dependency: transitive
     description:
@@ -713,10 +769,10 @@ packages:
     dependency: transitive
     description:
       name: win32
-      sha256: a6f0236dbda0f63aa9a25ad1ff9a9d8a4eaaa5012da0dc59d21afdb1dc361ca4
+      sha256: "68d1e89a91ed61ad9c370f9f8b6effed9ae5e0ede22a270bdfa6daf79fc2290a"
       url: "https://pub.dev"
     source: hosted
-    version: "3.1.4"
+    version: "5.5.4"
   xdg_directories:
     dependency: transitive
     description:

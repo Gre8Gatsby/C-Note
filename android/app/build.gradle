@@ -43,25 +43,16 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.example.c_note"
-        minSdkVersion 23
+        applicationId "com.example.verbalyze"
+        minSdkVersion flutter.minSdkVersion
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }
 
-    signingConfigs {
-        release {
-            keyAlias 'your_key_alias'
-            keyPassword 'your_key_password'
-            storeFile file('path/to/your/keystore.jks')
-            storePassword 'your_store_password'
-        }
-    }
-
     buildTypes {
         release {
-            signingConfig signingConfigs.release
+            signingConfig signingConfigs.debug
         }
     }
 }

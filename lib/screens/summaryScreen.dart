@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:c_note/utils.dart';
-import 'package:c_note/gpt_service.dart';
+import 'package:c_note/services/gpt_service.dart';
 
 class SummaryScreen extends StatefulWidget {
-  const SummaryScreen({super.key});
+  const SummaryScreen({Key? key}) : super(key: key);
 
   @override
   _SummaryScreenState createState() => _SummaryScreenState();
@@ -27,7 +26,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
     });
 
     try {
-      final summary = await GPTService.generateSummary(_textController.text);
+      final summary = await GPTService.summarizeCall(_textController.text);
       setState(() {
         _summary = summary;
         _isLoading = false;
@@ -46,17 +45,10 @@ class _SummaryScreenState extends State<SummaryScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Summary', style: Utils.getCustomFont(fontFamily: 'Roboto', fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment(-1, -1),
-              end: Alignment(1, 1),
-              colors: <Color>[Color(0xff23a5d6), Color(0xff623aa2)],
-              stops: <double>[0, 1],
-            ),
-          ),
-        ),
+        title: Text('Summary', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        iconTheme: IconThemeData(color: Colors.black),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -66,9 +58,11 @@ class _SummaryScreenState extends State<SummaryScreen> {
             TextField(
               controller: _textController,
               maxLines: 5,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 hintText: 'Enter text to summarize',
                 border: OutlineInputBorder(),
+                filled: true,
+                fillColor: Colors.grey[200],
               ),
             ),
             const SizedBox(height: 16),
@@ -77,18 +71,22 @@ class _SummaryScreenState extends State<SummaryScreen> {
               child: _isLoading
                   ? const CircularProgressIndicator(color: Colors.white)
                   : const Text('Generate Summary'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue,
+                padding: EdgeInsets.symmetric(vertical: 12),
+              ),
             ),
             const SizedBox(height: 16),
             Text(
               'Summary:',
-              style: Utils.getCustomFont(fontFamily: 'Roboto', fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             Expanded(
               child: SingleChildScrollView(
                 child: Text(
                   _summary,
-                  style: Utils.getCustomFont(fontFamily: 'Roboto', fontSize: 16),
+                  style: TextStyle(fontSize: 16),
                 ),
               ),
             ),

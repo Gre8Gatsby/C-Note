@@ -5,9 +5,15 @@ import 'package:flutter_background_service_android/flutter_background_service_an
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:call_log/call_log.dart';
 import 'package:contacts_service/contacts_service.dart';
+import 'package:flutter_sound/flutter_sound.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:path_provider/path_provider.dart';
 import 'gpt_service.dart';
 
 class BackgroundCallService {
+  static FlutterSoundRecorder? _recorder;
+  static String? _recordingPath;
+
   static Future<void> initializeService() async {
     final service = FlutterBackgroundService();
 
@@ -51,6 +57,9 @@ class BackgroundCallService {
       service.stopSelf();
     });
 
+    _recorder = FlutterSoundRecorder();
+    await _recorder!.openRecorder();
+
     Timer.periodic(Duration(seconds: 10), (timer) async {
       await checkForNewCalls(service);
     });
@@ -67,11 +76,15 @@ class BackgroundCallService {
       for (var entry in entries) {
         if (entry.timestamp! > lastCheckedTimestamp) {
           final contactName = await getContactName(entry.number ?? '');
+          await _startRecording();
+          // Simulate recording for 10 seconds
+          await Future.delayed(Duration(seconds: 10));
+          final recordingFile = await _stopRecording();
           final transcript = "Simulated transcript for call with $contactName"; // In a real app, you'd get this from speech recognition
           final summary = await GPTService.summarizeCall(transcript);
 
           // Store the call note
-          await storeCallNote(contactName, entry.number ?? '', DateTime.fromMillisecondsSinceEpoch(entry.timestamp!), summary);
+          await storeCallNote(contactName, entry.number ?? '', DateTime.fromMillisecondsSinceEpoch(entry.timestamp!), summary, recordingFile);
 
           service.invoke(
             'update',
@@ -91,7 +104,6 @@ class BackgroundCallService {
       await prefs.setInt('lastCheckedTimestamp', now.millisecondsSinceEpoch);
     } catch (e) {
       print('Error in checkForNewCalls: $e');
-      // You might want to implement more robust error handling here
     }
   }
 
@@ -111,7 +123,7 @@ class BackgroundCallService {
     return 'Unknown';
   }
 
-  static Future<void> storeCallNote(String contactName, String phoneNumber, DateTime timestamp, String summary) async {
+  static Future<void> storeCallNote(String contactName, String phoneNumber, DateTime timestamp, String summary, String recordingPath) async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final key = '${contactName}_${timestamp.toIso8601String()}';
@@ -119,10 +131,35 @@ class BackgroundCallService {
         'phoneNumber': phoneNumber,
         'timestamp': timestamp.toIso8601String(),
         'summary': summary,
+        'recordingPath': recordingPath,
       };
       await prefs.setString(key, value.toString());
     } catch (e) {
       print('Error storing call note: $e');
+    }
+  }
+
+  static Future<void> _startRecording() async {
+    try {
+      await Permission.microphone.request();
+      await Permission.storage.request();
+
+      final directory = await getApplicationDocumentsDirectory();
+      _recordingPath = '${directory.path}/recording_${DateTime.now().millisecondsSinceEpoch}.aac';
+
+      await _recorder!.startRecorder(toFile: _recordingPath);
+    } catch (e) {
+      print('Error starting recording: $e');
+    }
+  }
+
+  static Future<String> _stopRecording() async {
+    try {
+      await _recorder!.stopRecorder();
+      return _recordingPath ?? '';
+    } catch (e) {
+      print('Error stopping recording: $e');
+      return '';
     }
   }
 }
