@@ -54,6 +54,7 @@ async fn main() -> anyhow::Result<()> {
         pipeline,
         audio_storage,
         llm_client,
+        stt_client,
     });
 
     let app = create_router(state);

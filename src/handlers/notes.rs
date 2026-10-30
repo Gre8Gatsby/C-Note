@@ -3,7 +3,7 @@ use crate::error::{AppError, Result};
 use crate::models::{
     CallNote, CreateManualNoteRequest, ListNotesQuery, ListNotesResponse, UpdateNoteRequest,
 };
-use crate::services::{AudioStorage, CallPipeline, LlmClient};
+use crate::services::{AudioStorage, CallPipeline, LlmClient, SttClient};
 use axum::{
     extract::{Multipart, Path, Query, State},
     http::header,
@@ -23,6 +23,7 @@ pub struct AppState {
     pub pipeline: CallPipeline,
     pub audio_storage: AudioStorage,
     pub llm_client: LlmClient,
+    pub stt_client: SttClient,
 }
 
 /// Handler for multipart audio call upload

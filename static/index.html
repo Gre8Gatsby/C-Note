@@ -856,30 +856,47 @@
 
   <!-- MODAL: RECORD CALL -->
   <div class="modal-overlay" id="record-modal">
-    <div class="modal-card">
+    <div class="modal-card" style="max-width: 580px;">
       <div class="modal-header">
-        <h2>Record Live Call</h2>
+        <h2>Live Call Assistant</h2>
         <button class="btn btn-secondary btn-icon" onclick="closeRecordModal()">✕</button>
       </div>
       <div class="recording-box">
         <canvas class="visualizer-canvas" id="canvas-visualizer"></canvas>
         <div class="record-timer" id="record-timer">00:00</div>
-        <p style="font-size: 13px; color: var(--text-dim);" id="record-status-text">Microphone ready. Tap Start to capture audio.</p>
+        <p style="font-size: 13px; color: var(--text-dim);" id="record-status-text">Microphone ready. Start live call to transcribe and summarize in real time.</p>
       </div>
 
-      <div class="form-group">
-        <label>Contact Name</label>
-        <input type="text" id="rec-contact-name" class="form-control" placeholder="e.g. Sarah Connor" value="Client Call">
+      <!-- Real-Time HUD (Shown during live call) -->
+      <div id="live-call-hud" style="display: none;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+          <span style="font-size: 11px; font-weight: 700; color: #818cf8; text-transform: uppercase; letter-spacing: 0.05em;">Live Captions (Real-Time STT)</span>
+          <span class="status-dot"></span>
+        </div>
+        <div id="live-captions-box" style="background: rgba(0,0,0,0.35); border: 1px solid var(--border); border-radius: 10px; padding: 12px; max-height: 120px; overflow-y: auto; font-size: 13px; line-height: 1.5; color: #f1f5f9; margin-bottom: 12px; min-height: 50px;">
+          <span id="live-final-transcript"></span>
+          <span id="live-interim-transcript" style="color: #38bdf8; font-style: italic;">Listening...</span>
+        </div>
+
+        <div id="live-action-items-section" style="display: none;">
+          <div style="font-size: 11px; font-weight: 700; color: #34d399; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px;">⚡ Detected Live Commitments & Action Items</div>
+          <div id="live-action-items-list" style="display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px;"></div>
+        </div>
       </div>
-      <div class="form-group">
-        <label>Phone Number</label>
-        <input type="text" id="rec-phone-number" class="form-control" placeholder="+1 (555) 000-0000" value="+1 (555) 349-2810">
+
+      <div class="form-group" id="rec-fields-group">
+        <label>Contact Name</label>
+        <input type="text" id="rec-contact-name" class="form-control" placeholder="e.g. Sarah Connor" value="Sarah Connor">
+        <div style="margin-top: 10px;">
+          <label>Phone Number</label>
+          <input type="text" id="rec-phone-number" class="form-control" placeholder="+1 (555) 000-0000" value="+1 (415) 555-2671">
+        </div>
       </div>
 
       <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 20px;">
         <button class="btn btn-secondary" onclick="closeRecordModal()">Cancel</button>
         <button class="btn btn-record" id="btn-toggle-rec" onclick="toggleRecording()">
-          Start Recording
+          Start Live Call
         </button>
       </div>
     </div>
@@ -1260,6 +1277,8 @@
     }
 
     // Live Audio Recording
+    let liveWs = null;
+
     async function toggleRecording() {
       if (!isRecording) {
         try {
@@ -1278,6 +1297,59 @@
       audioChunks = [];
       recordSeconds = 0;
 
+      const contactName = document.getElementById('rec-contact-name').value || 'Client Call';
+      const phoneNumber = document.getElementById('rec-phone-number').value || '+1 (415) 555-2671';
+
+      // Reset live captions
+      document.getElementById('live-call-hud').style.display = 'block';
+      document.getElementById('rec-fields-group').style.display = 'none';
+      document.getElementById('live-final-transcript').innerText = '';
+      document.getElementById('live-interim-transcript').innerText = 'Listening to speech...';
+      document.getElementById('live-action-items-section').style.display = 'none';
+      document.getElementById('live-action-items-list').innerHTML = '';
+
+      // Connect to Live Real-Time WebSocket
+      const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const wsUrl = `${wsProtocol}//${window.location.host}/ws/live-call`;
+      liveWs = new WebSocket(wsUrl);
+
+      liveWs.onopen = () => {
+        liveWs.send(JSON.stringify({
+          action: 'start',
+          contact_name: contactName,
+          phone_number: phoneNumber
+        }));
+      };
+
+      liveWs.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          if (data.type === 'transcript_interim') {
+            document.getElementById('live-interim-transcript').innerText = ' ' + data.text;
+          } else if (data.type === 'transcript_final') {
+            document.getElementById('live-final-transcript').innerText += (document.getElementById('live-final-transcript').innerText ? ' ' : '') + data.text;
+            document.getElementById('live-interim-transcript').innerText = '';
+          } else if (data.type === 'live_action_item') {
+            const list = document.getElementById('live-action-items-list');
+            document.getElementById('live-action-items-section').style.display = 'block';
+            const item = document.createElement('div');
+            item.style.fontSize = '12px';
+            item.style.padding = '4px 8px';
+            item.style.borderRadius = '6px';
+            item.style.background = 'rgba(16, 185, 129, 0.15)';
+            item.style.border = '1px solid rgba(16, 185, 129, 0.3)';
+            item.style.color = '#34d399';
+            item.innerText = '⚡ ' + data.item;
+            list.appendChild(item);
+          } else if (data.type === 'call_completed') {
+            showToast('Call transcribed & summarized in real time!');
+            closeRecordModal();
+            loadCalendarSummary();
+            loadNotes();
+          }
+        } catch (_) {}
+      };
+
       // Web Audio Visualizer
       audioContext = new (window.AudioContext || window.webkitAudioContext)();
       const source = audioContext.createMediaStreamSource(stream);
@@ -1288,21 +1360,27 @@
       drawVisualizer();
 
       mediaRecorder = new MediaRecorder(stream);
-      mediaRecorder.ondataavailable = e => {
-        if (e.data.size > 0) audioChunks.push(e.data);
+      mediaRecorder.ondataavailable = async (e) => {
+        if (e.data.size > 0) {
+          audioChunks.push(e.data);
+          if (liveWs && liveWs.readyState === WebSocket.OPEN) {
+            const buffer = await e.data.arrayBuffer();
+            liveWs.send(buffer);
+          }
+        }
       };
 
-      mediaRecorder.onstop = async () => {
+      mediaRecorder.onstop = () => {
         stream.getTracks().forEach(track => track.stop());
         cancelAnimationFrame(animationId);
-        await processRecordedCall();
       };
 
-      mediaRecorder.start();
+      // Stream chunks every 250ms for low latency
+      mediaRecorder.start(250);
 
-      document.getElementById('btn-toggle-rec').innerHTML = 'Stop & Process Note';
+      document.getElementById('btn-toggle-rec').innerHTML = 'End Call & Finalize';
       document.getElementById('btn-toggle-rec').style.background = '#4f46e5';
-      document.getElementById('record-status-text').innerText = 'Recording in progress... Streaming audio';
+      document.getElementById('record-status-text').innerText = 'Active Call: Streaming audio live to STT & LLM';
 
       recordingTimer = setInterval(() => {
         recordSeconds++;
@@ -1317,9 +1395,14 @@
         mediaRecorder.stop();
         clearInterval(recordingTimer);
         isRecording = false;
-        document.getElementById('record-status-text').innerText = 'Processing audio with STT & LLM pipeline...';
+
+        document.getElementById('record-status-text').innerText = 'Synthesizing final call notes and action items...';
         document.getElementById('btn-toggle-rec').disabled = true;
-        document.getElementById('btn-toggle-rec').innerText = 'Processing...';
+        document.getElementById('btn-toggle-rec').innerText = 'Finalizing Note...';
+
+        if (liveWs && liveWs.readyState === WebSocket.OPEN) {
+          liveWs.send(JSON.stringify({ action: 'finish' }));
+        }
       }
     }
 
@@ -1441,10 +1524,19 @@
     function openRecordModal() {
       document.getElementById('record-modal').classList.add('open');
       document.getElementById('record-timer').innerText = '00:00';
+      document.getElementById('live-call-hud').style.display = 'none';
+      document.getElementById('rec-fields-group').style.display = 'block';
+      document.getElementById('btn-toggle-rec').disabled = false;
+      document.getElementById('btn-toggle-rec').innerHTML = 'Start Live Call';
+      document.getElementById('btn-toggle-rec').style.background = '';
+      document.getElementById('record-status-text').innerText = 'Microphone ready. Start live call to transcribe and summarize in real time.';
     }
     function closeRecordModal() {
       document.getElementById('record-modal').classList.remove('open');
       if (isRecording) stopRecording();
+      if (liveWs && liveWs.readyState === WebSocket.OPEN) {
+        liveWs.close();
+      }
     }
     function openManualModal() {
       document.getElementById('manual-modal').classList.add('open');

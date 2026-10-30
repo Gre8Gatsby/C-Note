@@ -40,6 +40,7 @@ async fn setup_test_app() -> axum::Router {
         pipeline,
         audio_storage,
         llm_client,
+        stt_client,
     });
 
     create_router(state)
@@ -275,4 +276,44 @@ async fn test_audio_call_processing_pipeline() {
     let file_path = audio_storage.get_file_path(&note.audio_file_path.unwrap());
     assert!(file_path.exists());
 }
+
+#[tokio::test]
+async fn test_live_stt_session_streaming() {
+    let mut config = Config::from_env();
+    config.enable_mock_fallback = true;
+    let stt_client = SttClient::new(config);
+
+    let mut session = stt_client.start_live_session().await;
+
+    // Send 32KB of audio chunks in real-time
+    session
+        .send_audio_chunk(vec![0u8; 16384])
+        .await
+        .unwrap();
+    session
+        .send_audio_chunk(vec![0u8; 16384])
+        .await
+        .unwrap();
+
+    // Verify events flow back
+    let mut received_event = false;
+    for _ in 0..5 {
+        if let Some(_event) = tokio::time::timeout(
+            std::time::Duration::from_millis(500),
+            session.next_event(),
+        )
+        .await
+        .ok()
+        .flatten()
+        {
+            received_event = true;
+            break;
+        }
+    }
+    assert!(received_event);
+
+    let full_transcript = session.finish().await;
+    assert!(!full_transcript.is_empty());
+}
+
 
