@@ -1,0 +1,1482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verbalyze - AI Call Notes & Summaries</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #07090e;
+      --surface: #0e131f;
+      --surface-elevated: #141c2e;
+      --surface-hover: #1b263e;
+      --border: rgba(255, 255, 255, 0.08);
+      --border-focus: rgba(99, 102, 241, 0.5);
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --primary: #6366f1;
+      --primary-hover: #4f46e5;
+      --primary-glow: rgba(99, 102, 241, 0.25);
+      --accent: #06b6d4;
+      --success: #10b981;
+      --success-glow: rgba(16, 185, 129, 0.2);
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --radius: 14px;
+      --radius-sm: 8px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      min-height: 100vh;
+      overflow-x: hidden;
+      background-image: 
+        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(99, 102, 241, 0.15), transparent),
+        radial-gradient(ellipse 60% 40% at 90% 10%, rgba(6, 182, 212, 0.08), transparent);
+      background-attachment: fixed;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--bg);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--surface-hover);
+      border-radius: 4px;
+    }
+
+    /* Container */
+    .container {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 24px 20px 80px;
+    }
+
+    /* Navigation Header */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 24px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: var(--text);
+    }
+
+    .brand-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #4f46e5, #06b6d4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 20px var(--primary-glow);
+    }
+
+    .brand-icon svg {
+      width: 22px;
+      height: 22px;
+      fill: none;
+      stroke: #fff;
+      stroke-width: 2.2;
+    }
+
+    .brand-text h1 {
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      background: linear-gradient(90deg, #fff 0%, #cbd5e1 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .brand-text p {
+      font-size: 12px;
+      color: var(--text-dim);
+      font-weight: 500;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .status-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 6px 14px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      color: var(--text-muted);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--success);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--success);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.85); }
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 10px 18px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      border: 1px solid transparent;
+      outline: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #6366f1, #4f46e5);
+      color: #fff;
+      box-shadow: 0 4px 14px var(--primary-glow);
+    }
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #4f46e5, #4338ca);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px var(--primary-glow);
+    }
+
+    .btn-record {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(239, 68, 68, 0.25);
+    }
+    .btn-record:hover {
+      background: linear-gradient(135deg, #dc2626, #b91c1c);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+    .btn-secondary:hover {
+      background: var(--surface-hover);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .btn-icon {
+      padding: 8px;
+      border-radius: 8px;
+    }
+
+    /* Nav Tabs */
+    .nav-tabs {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
+    }
+
+    .nav-tab {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      font-size: 14px;
+      font-weight: 600;
+      border-radius: 8px;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background: transparent;
+      border: none;
+    }
+    .nav-tab:hover {
+      color: var(--text);
+      background: var(--surface);
+    }
+    .nav-tab.active {
+      color: #fff;
+      background: var(--surface-elevated);
+      border: 1px solid var(--border);
+    }
+
+    /* Search & Filter Bar */
+    .filter-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .search-box {
+      flex: 1;
+      min-width: 280px;
+      position: relative;
+    }
+
+    .search-box svg {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 18px;
+      height: 18px;
+      stroke: var(--text-dim);
+      fill: none;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 10px 16px 10px 42px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 14px;
+      color: var(--text);
+      transition: all 0.2s ease;
+    }
+    .search-input:focus {
+      outline: none;
+      border-color: var(--border-focus);
+      background: var(--surface-elevated);
+      box-shadow: 0 0 0 3px var(--primary-glow);
+    }
+    .search-input::placeholder {
+      color: var(--text-dim);
+    }
+
+    /* Calendar Strip */
+    .calendar-strip {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 4px 2px 14px;
+      margin-bottom: 24px;
+    }
+
+    .cal-day-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 14px;
+      min-width: 68px;
+      border-radius: 12px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+    .cal-day-btn:hover {
+      background: var(--surface-hover);
+      color: var(--text);
+      transform: translateY(-2px);
+    }
+    .cal-day-btn.active {
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.25), rgba(6, 182, 212, 0.15));
+      border-color: var(--primary);
+      color: #fff;
+      box-shadow: 0 4px 12px var(--primary-glow);
+    }
+    .cal-day-btn .day-name {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 2px;
+    }
+    .cal-day-btn .day-number {
+      font-size: 18px;
+      font-weight: 700;
+    }
+    .cal-day-btn .note-badge {
+      font-size: 10px;
+      font-weight: 700;
+      margin-top: 4px;
+      padding: 1px 6px;
+      border-radius: 10px;
+      background: var(--surface-elevated);
+      color: var(--accent);
+    }
+
+    .cal-day-btn.active .note-badge {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    /* Cards Grid */
+    .notes-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .note-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+      overflow: hidden;
+    }
+    .note-card:hover {
+      border-color: rgba(255, 255, 255, 0.14);
+      background: var(--surface-elevated);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    }
+
+    .note-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .contact-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    .contact-details h3 {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    .contact-details .phone {
+      font-size: 13px;
+      color: var(--text-dim);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .note-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .badge {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: var(--surface-elevated);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+    .badge.positive {
+      background: rgba(16, 185, 129, 0.15);
+      border-color: rgba(16, 185, 129, 0.3);
+      color: #34d399;
+    }
+    .badge.neutral {
+      background: rgba(148, 163, 184, 0.12);
+      border-color: rgba(148, 163, 184, 0.25);
+      color: #cbd5e1;
+    }
+    .badge.negative {
+      background: rgba(239, 68, 68, 0.15);
+      border-color: rgba(239, 68, 68, 0.3);
+      color: #f87171;
+    }
+
+    /* Audio Player */
+    .audio-player {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 14px;
+      margin-bottom: 14px;
+    }
+
+    .audio-play-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--primary);
+      border: none;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all 0.2s ease;
+    }
+    .audio-play-btn:hover {
+      background: var(--primary-hover);
+      transform: scale(1.05);
+    }
+
+    .audio-track {
+      flex: 1;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 2px;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .audio-progress {
+      height: 100%;
+      background: linear-gradient(90deg, #6366f1, #06b6d4);
+      border-radius: 2px;
+      width: 0%;
+    }
+
+    .audio-time {
+      font-size: 11px;
+      color: var(--text-dim);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Note Body */
+    .note-summary {
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(6, 182, 212, 0.04));
+      border: 1px solid rgba(99, 102, 241, 0.2);
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-bottom: 14px;
+    }
+
+    .summary-title {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #818cf8;
+      margin-bottom: 6px;
+    }
+
+    .summary-text {
+      font-size: 14px;
+      color: #e2e8f0;
+      line-height: 1.6;
+    }
+
+    /* Action Items */
+    .action-items-list {
+      margin-bottom: 14px;
+    }
+
+    .action-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .action-checkbox {
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+      border: 1.5px solid var(--text-dim);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      margin-top: 2px;
+      flex-shrink: 0;
+      transition: all 0.15s ease;
+    }
+    .action-checkbox.checked {
+      background: var(--success);
+      border-color: var(--success);
+    }
+    .action-checkbox.checked::after {
+      content: '✓';
+      color: #fff;
+      font-size: 11px;
+      font-weight: bold;
+    }
+    .action-item.done {
+      text-decoration: line-through;
+      color: var(--text-dim);
+    }
+
+    /* Topics Tags */
+    .topics-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .topic-pill {
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+    }
+
+    .note-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+
+    /* Modal Backdrop */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      width: 100%;
+      max-width: 520px;
+      padding: 28px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      transform: scale(0.95) translateY(10px);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .modal-overlay.open .modal-card {
+      transform: scale(1) translateY(0);
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .modal-header h2 {
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+    .form-control {
+      width: 100%;
+      padding: 10px 14px;
+      background: var(--surface-elevated);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 14px;
+      color: var(--text);
+      transition: all 0.2s ease;
+    }
+    .form-control:focus {
+      outline: none;
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 3px var(--primary-glow);
+    }
+    textarea.form-control {
+      min-height: 110px;
+      resize: vertical;
+    }
+
+    /* Live Recording Visualizer */
+    .recording-box {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 24px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .record-timer {
+      font-size: 36px;
+      font-weight: 800;
+      font-family: 'JetBrains Mono', monospace;
+      color: #ef4444;
+      margin-bottom: 12px;
+    }
+
+    .visualizer-canvas {
+      width: 100%;
+      height: 60px;
+      display: block;
+      margin: 0 auto 12px;
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      background: var(--surface);
+      border: 1px dashed var(--border);
+      border-radius: var(--radius);
+    }
+    .empty-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+      background: var(--surface-elevated);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+      color: var(--text-dim);
+    }
+    .empty-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .empty-subtitle {
+      font-size: 14px;
+      color: var(--text-muted);
+      max-width: 400px;
+      margin: 0 auto 20px;
+    }
+
+    /* Toasts */
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 2000;
+    }
+    .toast {
+      background: var(--surface-elevated);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 18px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text);
+      animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header>
+      <a href="/" class="brand">
+        <div class="brand-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+        </div>
+        <div class="brand-text">
+          <h1>Verbalyze</h1>
+          <p>AI Call Transcription & Notes Engine</p>
+        </div>
+      </a>
+
+      <div class="header-actions">
+        <div class="status-pill">
+          <span class="status-dot"></span>
+          <span>STT / LLM Pipeline Active</span>
+        </div>
+        <button class="btn btn-record" onclick="openRecordModal()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
+          Record Live Call
+        </button>
+        <button class="btn btn-secondary" onclick="openManualModal()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+          New Note
+        </button>
+      </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <div class="nav-tabs">
+      <button class="nav-tab active" onclick="switchTab('notes')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        Call Notes
+      </button>
+      <button class="nav-tab" onclick="switchTab('summarize')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        AI Summarizer Playground
+      </button>
+      <button class="nav-tab" onclick="switchTab('contacts')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Contacts Directory
+      </button>
+    </div>
+
+    <!-- TAB 1: CALL NOTES -->
+    <div id="tab-notes">
+      <!-- Search & Date Filter -->
+      <div class="filter-bar">
+        <div class="search-box">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" class="search-input" id="search-input" placeholder="Search by contact, transcript, or summary keywords..." oninput="debounceSearch()">
+        </div>
+        <button class="btn btn-secondary" onclick="clearDateFilter()">Show All Dates</button>
+      </div>
+
+      <!-- Horizontal Calendar Strip -->
+      <div class="calendar-strip" id="calendar-strip"></div>
+
+      <!-- Notes Feed -->
+      <div class="notes-grid" id="notes-container">
+        <!-- Injected via JavaScript -->
+      </div>
+    </div>
+
+    <!-- TAB 2: SUMMARIZER PLAYGROUND -->
+    <div id="tab-summarize" style="display: none;">
+      <div class="note-card" style="max-width: 760px; margin: 0 auto;">
+        <h2 style="font-size: 18px; margin-bottom: 8px;">Direct AI Summarizer</h2>
+        <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 20px;">
+          Paste raw call transcripts or meeting notes to stream a structured summary, key action items, topics, and sentiment.
+        </p>
+        <div class="form-group">
+          <label>Transcript / Conversation Text</label>
+          <textarea id="direct-text-input" class="form-control" style="min-height: 160px;" placeholder="Paste transcript or notes here..."></textarea>
+        </div>
+        <div class="form-group">
+          <label>Custom LLM Prompt Directives (Optional)</label>
+          <input type="text" id="direct-instructions" class="form-control" placeholder="e.g. Focus on budget deliverables and deadlines">
+        </div>
+        <button class="btn btn-primary" id="btn-generate-summary" onclick="handleDirectSummarize()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          Generate Summary
+        </button>
+
+        <div id="direct-result-container" style="display: none; margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border);"></div>
+      </div>
+    </div>
+
+    <!-- TAB 3: CONTACTS DIRECTORY -->
+    <div id="tab-contacts" style="display: none;">
+      <div class="notes-grid" id="contacts-container"></div>
+    </div>
+  </div>
+
+  <!-- MODAL: RECORD CALL -->
+  <div class="modal-overlay" id="record-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2>Record Live Call</h2>
+        <button class="btn btn-secondary btn-icon" onclick="closeRecordModal()">✕</button>
+      </div>
+      <div class="recording-box">
+        <canvas class="visualizer-canvas" id="canvas-visualizer"></canvas>
+        <div class="record-timer" id="record-timer">00:00</div>
+        <p style="font-size: 13px; color: var(--text-dim);" id="record-status-text">Microphone ready. Tap Start to capture audio.</p>
+      </div>
+
+      <div class="form-group">
+        <label>Contact Name</label>
+        <input type="text" id="rec-contact-name" class="form-control" placeholder="e.g. Sarah Connor" value="Client Call">
+      </div>
+      <div class="form-group">
+        <label>Phone Number</label>
+        <input type="text" id="rec-phone-number" class="form-control" placeholder="+1 (555) 000-0000" value="+1 (555) 349-2810">
+      </div>
+
+      <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 20px;">
+        <button class="btn btn-secondary" onclick="closeRecordModal()">Cancel</button>
+        <button class="btn btn-record" id="btn-toggle-rec" onclick="toggleRecording()">
+          Start Recording
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: MANUAL NOTE -->
+  <div class="modal-overlay" id="manual-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2>Create Manual Note</h2>
+        <button class="btn btn-secondary btn-icon" onclick="closeManualModal()">✕</button>
+      </div>
+      <div class="form-group">
+        <label>Contact Name</label>
+        <input type="text" id="man-contact-name" class="form-control" placeholder="e.g. John Doe">
+      </div>
+      <div class="form-group">
+        <label>Phone Number</label>
+        <input type="text" id="man-phone-number" class="form-control" placeholder="+1234567890">
+      </div>
+      <div class="form-group">
+        <label>Transcript / Notes</label>
+        <textarea id="man-transcript" class="form-control" placeholder="Enter conversation details..."></textarea>
+      </div>
+      <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 20px;">
+        <button class="btn btn-secondary" onclick="closeManualModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="submitManualNote()">Save & Summarize</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Stack -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <script>
+    // State
+    let notes = [];
+    let calendarGroups = [];
+    let activeDateFilter = null;
+    let searchDebounce = null;
+    let currentTab = 'notes';
+
+    // Audio Recording state
+    let mediaRecorder = null;
+    let audioChunks = [];
+    let recordingTimer = null;
+    let recordSeconds = 0;
+    let isRecording = false;
+    let audioContext = null;
+    let analyser = null;
+    let animationId = null;
+
+    // Bootstrap
+    document.addEventListener('DOMContentLoaded', async () => {
+      await loadCalendarSummary();
+      await loadNotes();
+    });
+
+    // API calls
+    async function loadCalendarSummary() {
+      try {
+        const res = await fetch('/api/v1/calendar/summary');
+        calendarGroups = await res.json();
+        renderCalendarStrip();
+      } catch (err) {
+        console.error('Error loading calendar:', err);
+      }
+    }
+
+    async function loadNotes(date = activeDateFilter, query = '') {
+      try {
+        const params = new URLSearchParams();
+        if (date) params.append('date', date);
+        if (query) params.append('query', query);
+
+        const res = await fetch(`/api/v1/notes?${params.toString()}`);
+        const data = await res.json();
+        notes = data.notes || [];
+        renderNotes();
+      } catch (err) {
+        showToast('Error loading notes: ' + err.message);
+      }
+    }
+
+    async function loadContacts() {
+      try {
+        const res = await fetch('/api/v1/contacts');
+        const contacts = await res.json();
+        renderContacts(contacts);
+      } catch (err) {
+        showToast('Error loading contacts');
+      }
+    }
+
+    // Tab Switching
+    function switchTab(tab) {
+      currentTab = tab;
+      document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+      document.querySelector(`button[onclick="switchTab('${tab}')"]`).classList.add('active');
+
+      document.getElementById('tab-notes').style.display = tab === 'notes' ? 'block' : 'none';
+      document.getElementById('tab-summarize').style.display = tab === 'summarize' ? 'block' : 'none';
+      document.getElementById('tab-contacts').style.display = tab === 'contacts' ? 'block' : 'none';
+
+      if (tab === 'contacts') loadContacts();
+    }
+
+    // Render Calendar Strip
+    function renderCalendarStrip() {
+      const container = document.getElementById('calendar-strip');
+      const today = new Date();
+      let html = '';
+
+      for (let i = -3; i <= 3; i++) {
+        const d = new Date(today);
+        d.setDate(today.getDate() + i);
+        const isoDate = d.toISOString().split('T')[0];
+        const dayName = d.toLocaleDateString('en-US', { weekday: 'short' });
+        const dayNumber = d.getDate();
+
+        const match = calendarGroups.find(g => g.date === isoDate);
+        const count = match ? match.count : 0;
+        const isActive = activeDateFilter === isoDate;
+
+        html += `
+          <button class="cal-day-btn ${isActive ? 'active' : ''}" onclick="selectDateFilter('${isoDate}')">
+            <span class="day-name">${dayName}</span>
+            <span class="day-number">${dayNumber}</span>
+            <span class="note-badge">${count} calls</span>
+          </button>
+        `;
+      }
+
+      container.innerHTML = html;
+    }
+
+    function selectDateFilter(isoDate) {
+      activeDateFilter = isoDate;
+      renderCalendarStrip();
+      loadNotes(isoDate, document.getElementById('search-input').value);
+    }
+
+    function clearDateFilter() {
+      activeDateFilter = null;
+      renderCalendarStrip();
+      loadNotes(null, document.getElementById('search-input').value);
+    }
+
+    function debounceSearch() {
+      clearTimeout(searchDebounce);
+      searchDebounce = setTimeout(() => {
+        const q = document.getElementById('search-input').value;
+        loadNotes(activeDateFilter, q);
+      }, 250);
+    }
+
+    // Render Notes Feed
+    function renderNotes() {
+      const container = document.getElementById('notes-container');
+
+      if (notes.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            </div>
+            <div class="empty-title">No Call Notes Found</div>
+            <div class="empty-subtitle">Record a live call or create a note to transcribe and generate AI summaries automatically.</div>
+            <button class="btn btn-primary" onclick="openRecordModal()">Record Live Call</button>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = notes.map(note => {
+        let actionItems = [];
+        try {
+          if (note.action_items) actionItems = JSON.parse(note.action_items);
+        } catch (_) {}
+
+        let topics = [];
+        try {
+          if (note.key_topics) topics = JSON.parse(note.key_topics);
+        } catch (_) {}
+
+        const sentimentClass = (note.sentiment || 'neutral').toLowerCase();
+        const initials = note.contact_name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'C';
+
+        return `
+          <div class="note-card" id="note-${note.id}">
+            <div class="note-header">
+              <div class="contact-info">
+                <div class="avatar">${initials}</div>
+                <div class="contact-details">
+                  <h3>${escapeHtml(note.contact_name)}</h3>
+                  <div class="phone">${escapeHtml(note.phone_number || 'No number')}</div>
+                </div>
+              </div>
+              <div class="note-meta">
+                <span class="badge ${sentimentClass}">${note.sentiment || 'Neutral'}</span>
+                <span class="badge">${note.duration_seconds ? note.duration_seconds + 's' : 'Recorded'}</span>
+                <span class="badge">${new Date(note.call_timestamp).toLocaleDateString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
+              </div>
+            </div>
+
+            ${note.audio_file_path ? `
+              <div class="audio-player">
+                <button class="audio-play-btn" onclick="toggleAudio('${note.audio_file_path}', this)">
+                  ▶
+                </button>
+                <div class="audio-track" onclick="seekAudio(event, '${note.audio_file_path}')">
+                  <div class="audio-progress" id="progress-${note.audio_file_path}"></div>
+                </div>
+                <span class="audio-time" id="time-${note.audio_file_path}">Audio Playback</span>
+              </div>
+            ` : ''}
+
+            <div class="note-summary">
+              <div class="summary-title">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                AI Summary & Key Takeaways
+              </div>
+              <p class="summary-text">${escapeHtml(note.summary)}</p>
+            </div>
+
+            ${actionItems.length > 0 ? `
+              <div class="action-items-list">
+                <div style="font-size: 12px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">ACTION ITEMS</div>
+                ${actionItems.map(item => `
+                  <div class="action-item" onclick="toggleTask(this)">
+                    <span class="action-checkbox"></span>
+                    <span>${escapeHtml(item)}</span>
+                  </div>
+                `).join('')}
+              </div>
+            ` : ''}
+
+            <div style="font-size: 12px; color: var(--text-dim); margin-top: 10px;">
+              <strong>Transcript:</strong> "${escapeHtml(note.transcript)}"
+            </div>
+
+            ${topics.length > 0 ? `
+              <div class="topics-row">
+                ${topics.map(t => `<span class="topic-pill">#${escapeHtml(t)}</span>`).join('')}
+              </div>
+            ` : ''}
+
+            <div class="note-actions">
+              <button class="btn btn-secondary" style="font-size: 12px; padding: 6px 12px;" onclick="resummarizeNote('${note.id}')">
+                ⚡ Re-summarize
+              </button>
+              <button class="btn btn-secondary" style="font-size: 12px; padding: 6px 12px; color: var(--danger);" onclick="deleteNote('${note.id}')">
+                Delete
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Render Contacts Directory
+    function renderContacts(contacts) {
+      const container = document.getElementById('contacts-container');
+      if (contacts.length === 0) {
+        container.innerHTML = `<div class="empty-state"><div class="empty-title">No Contacts Recorded Yet</div></div>`;
+        return;
+      }
+
+      container.innerHTML = `
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px;">
+          ${contacts.map(c => `
+            <div class="note-card" style="cursor: pointer;" onclick="filterByContact('${c.contact_name}')">
+              <div class="contact-info" style="margin-bottom: 12px;">
+                <div class="avatar">${c.contact_name.substring(0, 2).toUpperCase()}</div>
+                <div class="contact-details">
+                  <h3>${escapeHtml(c.contact_name)}</h3>
+                  <div class="phone">${escapeHtml(c.phone_number || 'N/A')}</div>
+                </div>
+              </div>
+              <div style="display: flex; justify-content: space-between; font-size: 12px; color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 10px;">
+                <span>Total Calls: <strong>${c.call_count}</strong></span>
+                <span>${c.last_call_timestamp ? new Date(c.last_call_timestamp).toLocaleDateString() : ''}</span>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    function filterByContact(name) {
+      switchTab('notes');
+      document.getElementById('search-input').value = name;
+      debounceSearch();
+    }
+
+    // Audio Playback
+    let activeAudio = null;
+    let activeAudioBtn = null;
+
+    function toggleAudio(filename, btn) {
+      if (activeAudio && !activeAudio.paused) {
+        activeAudio.pause();
+        if (activeAudioBtn) activeAudioBtn.innerHTML = '▶';
+        if (activeAudio.src.includes(filename)) return;
+      }
+
+      activeAudio = new Audio(`/api/v1/notes/audio/${filename}`);
+      activeAudioBtn = btn;
+      btn.innerHTML = '❚❚';
+
+      activeAudio.ontimeupdate = () => {
+        const prog = (activeAudio.currentTime / activeAudio.duration) * 100;
+        const bar = document.getElementById(`progress-${filename}`);
+        if (bar) bar.style.width = prog + '%';
+      };
+
+      activeAudio.onended = () => {
+        btn.innerHTML = '▶';
+      };
+
+      activeAudio.play().catch(e => {
+        btn.innerHTML = '▶';
+        showToast('Audio playback error: ' + e.message);
+      });
+    }
+
+    // Action Items Checkbox
+    function toggleTask(elem) {
+      const box = elem.querySelector('.action-checkbox');
+      box.classList.toggle('checked');
+      elem.classList.toggle('done');
+    }
+
+    // Direct Summarize Playground
+    async function handleDirectSummarize() {
+      const text = document.getElementById('direct-text-input').value;
+      const instructions = document.getElementById('direct-instructions').value;
+      const btn = document.getElementById('btn-generate-summary');
+      const resContainer = document.getElementById('direct-result-container');
+
+      if (!text.trim()) {
+        showToast('Please enter text to summarize');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = 'Generating with LLM...';
+
+      try {
+        const res = await fetch('/api/v1/summarize', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text, instructions: instructions || undefined })
+        });
+        const data = await res.json();
+
+        resContainer.style.display = 'block';
+        resContainer.innerHTML = `
+          <div class="summary-title">Summary Output</div>
+          <p class="summary-text" style="font-size: 15px; margin-bottom: 14px;">${escapeHtml(data.summary)}</p>
+          ${data.action_items && data.action_items.length > 0 ? `
+            <div style="font-size: 12px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">EXTRACTED ACTIONS:</div>
+            ${data.action_items.map(a => `<div style="font-size: 13px; color: var(--text); margin-bottom: 4px;">• ${escapeHtml(a)}</div>`).join('')}
+          ` : ''}
+          ${data.key_topics && data.key_topics.length > 0 ? `
+            <div class="topics-row" style="margin-top: 14px;">
+              ${data.key_topics.map(t => `<span class="topic-pill">#${escapeHtml(t)}</span>`).join('')}
+            </div>
+          ` : ''}
+        `;
+        showToast('Summary generated successfully!');
+      } catch (err) {
+        showToast('Failed to generate summary: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = 'Generate Summary';
+      }
+    }
+
+    // Live Audio Recording
+    async function toggleRecording() {
+      if (!isRecording) {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          startRecording(stream);
+        } catch (err) {
+          showToast('Microphone access required: ' + err.message);
+        }
+      } else {
+        stopRecording();
+      }
+    }
+
+    function startRecording(stream) {
+      isRecording = true;
+      audioChunks = [];
+      recordSeconds = 0;
+
+      // Web Audio Visualizer
+      audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      const source = audioContext.createMediaStreamSource(stream);
+      analyser = audioContext.createAnalyser();
+      analyser.fftSize = 64;
+      source.connect(analyser);
+
+      drawVisualizer();
+
+      mediaRecorder = new MediaRecorder(stream);
+      mediaRecorder.ondataavailable = e => {
+        if (e.data.size > 0) audioChunks.push(e.data);
+      };
+
+      mediaRecorder.onstop = async () => {
+        stream.getTracks().forEach(track => track.stop());
+        cancelAnimationFrame(animationId);
+        await processRecordedCall();
+      };
+
+      mediaRecorder.start();
+
+      document.getElementById('btn-toggle-rec').innerHTML = 'Stop & Process Note';
+      document.getElementById('btn-toggle-rec').style.background = '#4f46e5';
+      document.getElementById('record-status-text').innerText = 'Recording in progress... Streaming audio';
+
+      recordingTimer = setInterval(() => {
+        recordSeconds++;
+        const mins = String(Math.floor(recordSeconds / 60)).padStart(2, '0');
+        const secs = String(recordSeconds % 60).padStart(2, '0');
+        document.getElementById('record-timer').innerText = `${mins}:${secs}`;
+      }, 1000);
+    }
+
+    function stopRecording() {
+      if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+        mediaRecorder.stop();
+        clearInterval(recordingTimer);
+        isRecording = false;
+        document.getElementById('record-status-text').innerText = 'Processing audio with STT & LLM pipeline...';
+        document.getElementById('btn-toggle-rec').disabled = true;
+        document.getElementById('btn-toggle-rec').innerText = 'Processing...';
+      }
+    }
+
+    async function processRecordedCall() {
+      const audioBlob = new Blob(audioChunks, { type: 'audio/aac' });
+      const contactName = document.getElementById('rec-contact-name').value || 'Client Call';
+      const phoneNumber = document.getElementById('rec-phone-number').value || '+1 (555) 000-0000';
+
+      const formData = new FormData();
+      formData.append('audio', audioBlob, 'recording.aac');
+      formData.append('contact_name', contactName);
+      formData.append('phone_number', phoneNumber);
+      formData.append('duration_seconds', recordSeconds);
+      formData.append('call_timestamp', new Date().toISOString());
+
+      try {
+        const res = await fetch('/api/v1/notes/upload', {
+          method: 'POST',
+          body: formData
+        });
+
+        if (!res.ok) throw new Error(await res.text());
+
+        const note = await res.json();
+        showToast('Call transcribed and summarized successfully!');
+        closeRecordModal();
+        await loadCalendarSummary();
+        await loadNotes();
+      } catch (err) {
+        showToast('Call processing failed: ' + err.message);
+      } finally {
+        document.getElementById('btn-toggle-rec').disabled = false;
+        document.getElementById('btn-toggle-rec').innerHTML = 'Start Recording';
+        document.getElementById('btn-toggle-rec').style.background = '';
+      }
+    }
+
+    function drawVisualizer() {
+      const canvas = document.getElementById('canvas-visualizer');
+      const ctx = canvas.getContext('2d');
+      const bufferLength = analyser.frequencyBinCount;
+      const dataArray = new Uint8Array(bufferLength);
+
+      function renderFrame() {
+        animationId = requestAnimationFrame(renderFrame);
+        analyser.getByteFrequencyData(dataArray);
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const barWidth = (canvas.width / bufferLength) * 2;
+        let x = 0;
+
+        for (let i = 0; i < bufferLength; i++) {
+          const barHeight = (dataArray[i] / 255) * canvas.height;
+          ctx.fillStyle = `rgb(${dataArray[i] + 50}, 99, 241)`;
+          ctx.fillRect(x, canvas.height - barHeight, barWidth - 1, barHeight);
+          x += barWidth;
+        }
+      }
+      renderFrame();
+    }
+
+    // Re-summarize & Delete Actions
+    async function resummarizeNote(id) {
+      try {
+        showToast('Re-summarizing with custom LLM...');
+        const res = await fetch(`/api/v1/notes/${id}/resummarize`, { method: 'POST' });
+        if (res.ok) {
+          showToast('Note re-summarized!');
+          await loadNotes();
+        }
+      } catch (err) {
+        showToast('Re-summarize failed');
+      }
+    }
+
+    async function deleteNote(id) {
+      if (!confirm('Are you sure you want to delete this call note?')) return;
+      try {
+        const res = await fetch(`/api/v1/notes/${id}`, { method: 'DELETE' });
+        if (res.ok) {
+          showToast('Note deleted');
+          await loadCalendarSummary();
+          await loadNotes();
+        }
+      } catch (err) {
+        showToast('Failed to delete');
+      }
+    }
+
+    // Manual Note
+    async function submitManualNote() {
+      const contact_name = document.getElementById('man-contact-name').value;
+      const phone_number = document.getElementById('man-phone-number').value;
+      const transcript = document.getElementById('man-transcript').value;
+
+      if (!contact_name.trim()) {
+        showToast('Contact name is required');
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/v1/notes', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ contact_name, phone_number, transcript })
+        });
+        if (res.ok) {
+          showToast('Manual note created!');
+          closeManualModal();
+          await loadCalendarSummary();
+          await loadNotes();
+        }
+      } catch (err) {
+        showToast('Failed to save note');
+      }
+    }
+
+    // Modal helpers
+    function openRecordModal() {
+      document.getElementById('record-modal').classList.add('open');
+      document.getElementById('record-timer').innerText = '00:00';
+    }
+    function closeRecordModal() {
+      document.getElementById('record-modal').classList.remove('open');
+      if (isRecording) stopRecording();
+    }
+    function openManualModal() {
+      document.getElementById('manual-modal').classList.add('open');
+    }
+    function closeManualModal() {
+      document.getElementById('manual-modal').classList.remove('open');
+    }
+
+    // Utility
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function showToast(msg) {
+      const c = document.getElementById('toast-container');
+      const t = document.createElement('div');
+      t.className = 'toast';
+      t.innerHTML = `<span>✨</span><span>${escapeHtml(msg)}</span>`;
+      c.appendChild(t);
+      setTimeout(() => {
+        t.style.opacity = '0';
+        t.style.transform = 'translateY(10px)';
+        setTimeout(() => t.remove(), 300);
+      }, 3500);
+    }
+  </script>
+</body>
+</html>
+
