@@ -6,7 +6,7 @@ use serde_json::{json, Value};
 use sqlx::sqlite::SqlitePoolOptions;
 use std::sync::Arc;
 use tower::ServiceExt;
-use verbalyze_backend::{
+use c_note::{
     create_router, run_migrations, AppState, AudioStorage, CallPipeline, Config, LlmClient,
     Repository, SttClient,
 };
@@ -63,6 +63,7 @@ async fn test_health_check() {
     let body = to_bytes(response.into_body(), usize::MAX).await.unwrap();
     let json: Value = serde_json::from_slice(&body).unwrap();
     assert_eq!(json["status"], "healthy");
+    assert_eq!(json["service"], "c-note");
 }
 
 #[tokio::test]

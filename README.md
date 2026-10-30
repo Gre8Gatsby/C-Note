@@ -1,6 +1,6 @@
-# Verbalyze Backend (Rust Rewrite)
+# C Note
 
-A high-performance, asynchronous backend service built in Rust using **Axum**, **Tokio**, and **SQLite (SQLx)**. This replaces the simulated and placeholder implementations from the Flutter `notesApp` with a production-grade call note-taking, transcription, and summarization engine that connects directly to **your own custom Streaming WebSocket / gRPC Speech-To-Text (STT)** and **Large Language Model (LLM)** services.
+A high-performance, asynchronous call note-taking service built in Rust using **Axum**, **Tokio**, and **SQLite (SQLx)**. C Note connects directly to **your own custom Streaming WebSocket / gRPC Speech-To-Text (STT)** and **Large Language Model (LLM)** services, featuring an embedded, sleek web UI.
 
 ---
 
@@ -13,6 +13,7 @@ A high-performance, asynchronous backend service built in Rust using **Axum**, *
 - **Live Bidirectional Audio Streaming**: `/ws/live-call` WebSocket endpoint allowing mobile clients to stream live microphone/call audio and receive real-time interim transcripts.
 - **Calendar & Contact Views**: Grouping and filtering APIs for calendar dates and contact call history.
 - **Audio Storage & Streaming**: Secure file manager for uploaded audio recordings with HTTP range-friendly streaming endpoints.
+- **Embedded Web UI / UX**: Clean, modern interface served directly from the backend.
 - **Built-in Mock AI Server**: Includes a turnkey mock STT & LLM streaming server (`examples/mock_ai_server.rs`) for local testing.
 
 ---
@@ -21,7 +22,7 @@ A high-performance, asynchronous backend service built in Rust using **Axum**, *
 
 ```mermaid
 flowchart TD
-    Client["Mobile / Flutter / Android Client"] -->|Upload Call Audio / Metadata| RestAPI["Verbalyze Axum REST API (Port 8080)"]
+    Client["Mobile / Web Client"] -->|Upload Call Audio / Metadata| RestAPI["C Note Axum REST API (Port 8080)"]
     Client -->|Live Stream Audio Frames| LiveWS["Live WebSocket /ws/live-call"]
 
     RestAPI --> Pipeline["Call Processing Pipeline"]
@@ -80,7 +81,7 @@ This runs:
 - Mock STT on `ws://127.0.0.1:9001/ws/stt`
 - Mock LLM on `ws://127.0.0.1:9002/ws/llm`
 
-### 4. Run the Verbalyze Backend
+### 4. Run C Note
 ```bash
 cargo run
 ```

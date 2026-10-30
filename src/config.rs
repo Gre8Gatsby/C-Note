@@ -32,7 +32,7 @@ impl Config {
             .unwrap_or(8080);
 
         let database_url = env::var("DATABASE_URL")
-            .unwrap_or_else(|_| "sqlite://verbalyze.db?mode=rwc".to_string());
+            .unwrap_or_else(|_| "sqlite://c_note.db?mode=rwc".to_string());
 
         let upload_dir = env::var("UPLOAD_DIR").unwrap_or_else(|_| "./uploads".to_string());
 

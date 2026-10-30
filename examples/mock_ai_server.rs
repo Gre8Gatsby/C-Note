@@ -44,7 +44,7 @@ struct LlmStreamEvent {
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     println!("============================================================");
-    println!(" Verbalyze Mock Streaming AI Services");
+    println!(" C Note Mock Streaming AI Services");
     println!(" - Mock STT WebSocket: ws://127.0.0.1:9001/ws/stt");
     println!(" - Mock LLM WebSocket: ws://127.0.0.1:9002/ws/llm");
     println!("============================================================");

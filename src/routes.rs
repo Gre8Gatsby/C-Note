@@ -45,7 +45,7 @@ pub fn create_router(state: Arc<AppState>) -> Router {
             get(|| async {
                 Json(json!({
                     "status": "healthy",
-                    "service": "verbalyze-backend",
+                    "service": "c-note",
                     "version": env!("CARGO_PKG_VERSION")
                 }))
             }),

@@ -155,7 +155,7 @@ impl SttClient {
     fn generate_fallback_transcript(&self, audio_bytes: &[u8]) -> String {
         let size_kb = audio_bytes.len() / 1024;
         format!(
-            "Hi, this is a call recording transcript processed by Verbalyze (received {} KB of audio). \
+            "Hi, this is a call recording transcript processed by C Note (received {} KB of audio). \
             The client confirmed the schedule for tomorrow at 2 PM and agreed to send over the updated project requirements by EOD.",
             size_kb
         )

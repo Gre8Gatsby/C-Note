@@ -3,7 +3,7 @@ use std::sync::Arc;
 use tokio::net::TcpListener;
 use tracing::info;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
-use verbalyze_backend::{
+use c_note::{
     create_router, run_migrations, AppState, AudioStorage, CallPipeline, Config, LlmClient,
     Repository, SttClient,
 };
@@ -14,13 +14,13 @@ async fn main() -> anyhow::Result<()> {
     tracing_subscriber::registry()
         .with(
             tracing_subscriber::EnvFilter::try_from_default_env()
-                .unwrap_or_else(|_| "verbalyze_backend=info,tower_http=info".into()),
+                .unwrap_or_else(|_| "c_note=info,tower_http=info".into()),
         )
         .with(tracing_subscriber::fmt::layer())
         .init();
 
     let config = Config::from_env();
-    info!("Starting Verbalyze Backend Service...");
+    info!("Starting C Note Backend Service...");
     info!("Database: {}", config.database_url);
     info!("STT WebSocket URL: {}", config.stt_ws_url);
     info!("LLM WebSocket URL: {}", config.llm_ws_url);
@@ -60,7 +60,7 @@ async fn main() -> anyhow::Result<()> {
 
     let addr = format!("{}:{}", config.server_host, config.server_port);
     let listener = TcpListener::bind(&addr).await?;
-    info!("🚀 Verbalyze Server listening on http://{}", addr);
+    info!("🚀 C Note Server listening on http://{}", addr);
 
     axum::serve(listener, app).await?;
 
